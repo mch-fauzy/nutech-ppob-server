@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model nutech_users {
+  id             String         @db.Uuid @id @default(uuid())
+  email          String         @db.Text @unique 
+  password       String         @db.Text
+  first_name     String         @db.Text
+  last_name      String         @db.Text
+  profile_image  String?        @db.Text
+  balance        Float          @db.DoublePrecision @default(0)
+  created_at     DateTime       @db.Timestamptz(3) @default(now())
+  created_by     String?        @db.Text
+  updated_at     DateTime       @db.Timestamptz(3) @updatedAt
+  updated_by     String?        @db.Text
+  deleted_at     DateTime?      @db.Timestamptz(3)
+  deleted_by     String?        @db.Text
+
+  transactions   nutech_transactions[]
+}
+
+model nutech_services {
+  id             Int            @db.Integer @id @default(autoincrement())
+  service_code   String         @db.Text @unique
+  service_name   String         @db.Text
+  service_icon   String         @db.Text
+  service_tariff Float          @db.DoublePrecision
+  created_at     DateTime       @db.Timestamptz(3) @default(now())
+  created_by     String?        @db.Text
+  updated_at     DateTime       @db.Timestamptz(3) @updatedAt
+  updated_by     String?        @db.Text
+  deleted_at     DateTime?      @db.Timestamptz(3)
+  deleted_by     String?        @db.Text
+
+  transactions   nutech_transactions[]
+}
+
+model nutech_banners {
+  id            Int        @db.Integer @id @default(autoincrement())
+  banner_name   String     @db.Text @unique
+  banner_image  String     @db.Text
+  description   String     @db.Text
+  created_at    DateTime   @db.Timestamptz(3) @default(now())
+  created_by    String?    @db.Text
+  updated_at    DateTime   @db.Timestamptz(3) @updatedAt
+  updated_by    String?    @db.Text
+  deleted_at    DateTime?  @db.Timestamptz(3)
+  deleted_by    String?    @db.Text
+}
+
+model nutech_transactions {
+  id               Int       @db.Integer @id @default(autoincrement())
+  user_id          String    @db.Uuid
+  service_id       Int       @db.Integer
+  transaction_type String    @db.Text
+  total_amount     Float     @db.DoublePrecision
+  invoice_number   String    @db.Text
+  created_at       DateTime  @db.Timestamptz(3) @default(now())
+  created_by       String?   @db.Text
+  updated_at       DateTime  @db.Timestamptz(3) @updatedAt
+  updated_by       String?   @db.Text
+  deleted_at       DateTime? @db.Timestamptz(3)
+  deleted_by       String?   @db.Text
+
+  user             nutech_users  @relation(fields: [user_id], references: [id])
+  service          nutech_services @relation(fields: [service_id], references: [id])
+}

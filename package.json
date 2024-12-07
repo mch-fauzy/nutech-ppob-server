@@ -1,0 +1,38 @@
+{
+    "name": "nutech-ppob-server",
+    "version": "1.0.0",
+    "description": "",
+    "main": "dist/server.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "tsc",
+        "dev": "dotenv -e .env.development node dist/server.js",
+        "prod": "dotenv -e .env.production node dist/server.js",
+        "seed:dev": "dotenv -e .env.development ts-node prisma/seed.ts",
+        "postinstall": "prisma generate",
+        "prismamigratenew:dev": "dotenv -e .env.development prisma migrate dev",
+        "prismamigrateexist:dev": "dotenv -e .env.development prisma migrate deploy",
+        "prismamigratenew:prod": "dotenv -e .env.production prisma migrate dev",
+        "prismamigrateexist:prod": "dotenv -e .env.production prisma migrate deploy",
+        "prismagenerate": "prisma generate"
+    },
+    "keywords": [],
+    "author": "Muchamad Fauzy",
+    "license": "ISC",
+    "devDependencies": {
+        "@types/cors": "^2.8.17",
+        "@types/express": "^5.0.0",
+        "@types/node": "^22.10.1",
+        "prisma": "^6.0.1",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.7.2"
+    },
+    "dependencies": {
+        "@prisma/client": "^6.0.1",
+        "cors": "^2.8.5",
+        "dotenv-cli": "^7.4.4",
+        "express": "^4.21.2",
+        "joi": "^17.13.3",
+        "winston": "^3.17.0"
+    }
+}
