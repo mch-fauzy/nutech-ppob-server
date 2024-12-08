@@ -1,7 +1,9 @@
-import { prisma } from '../configs/prisma-client';
+import { Prisma } from '@prisma/client';
+
+import { prismaClient } from '../configs/prisma-client';
 import { logger } from '../configs/winston';
 
-const bannersInsertQuery = prisma.$executeRaw`
+const bannersInsertQuery = Prisma.sql`
 INSERT INTO nutech_banners (banner_name, banner_image, description, updated_at)
 VALUES
   ('Banner 1', 'https://minio.nutech-integrasi.com/take-home-test/banner/Banner-1.png', 'Lerem Ipsum Dolor sit amet', NOW()),
@@ -11,7 +13,7 @@ VALUES
   ('Banner 5', 'https://minio.nutech-integrasi.com/take-home-test/banner/Banner-5.png', 'Lerem Ipsum Dolor sit amet', NOW());
 `;
 
-const servicesInsertQuery = prisma.$executeRaw`
+const servicesInsertQuery = Prisma.sql`
 INSERT INTO nutech_services (service_code, service_name, service_icon, service_tariff, updated_at)
 VALUES
   ('PAJAK', 'Pajak PBB', 'https://minio.nutech-integrasi.com/take-home-test/services/PBB.png', 40000, NOW()),
@@ -30,9 +32,9 @@ VALUES
 
 const seed = async () => {
     try {
-        await prisma.$transaction([
-            bannersInsertQuery,
-            servicesInsertQuery
+        await prismaClient.$transaction([
+            prismaClient.$executeRaw(bannersInsertQuery),
+            prismaClient.$executeRaw(servicesInsertQuery)
         ]);
 
         logger.info('Seeding complete');

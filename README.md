@@ -44,7 +44,7 @@ To run this project in local, follow the steps below:
 
 5. Migrate the database:
    ```
-   npm run prismamigratenew:dev
+   npm run prismamigrate:dev
    ```
 
 6. Seed the database:
