@@ -116,7 +116,7 @@ class MembershipController {
 
                 const request: MembershipUpdateProfileImageByEmailRequest = {
                     email: String(req.headers[CONSTANT.HEADERS.EMAIL]),
-                    imageUrl: `${CONFIG.APP.IMAGE_STATIC_URL}/${req.file?.filename}`
+                    imageUrl: `${CONFIG.APP.IMAGE_STATIC_URL}/${req.file.filename}`
                 };
                 const validatedRequest = await MembershipValidator.validateUpdateProfileImageByEmailRequest(request);
 

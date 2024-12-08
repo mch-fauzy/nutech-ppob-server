@@ -2,6 +2,7 @@ import { Router } from 'express';
 import swaggerUi from 'swagger-ui-express';
 
 import { membershipRouterV1 } from './v1/membership-route';
+import { informationRouterV1 } from './v1/information-route';
 import { CONFIG } from '../configs/config';
 import { logger } from '../configs/winston';
 import swaggerDocument from '../swagger.json'
@@ -14,6 +15,10 @@ const routes = [
     {
         path: '/v1',
         route: membershipRouterV1,
+    },
+    {
+        path: '/v1',
+        route: informationRouterV1,
     },
 ];
 

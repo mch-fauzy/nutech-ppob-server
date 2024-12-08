@@ -98,16 +98,16 @@ MembershipController.updateProfileForCurrentUser = (req, res, next) => __awaiter
         next(error);
     }
 });
+// TODO: If either on fail, then both fail
 MembershipController.updateProfileImageForCurrentUser = [
     multer_img_middleware_1.uploadImageToLocal,
     (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-        var _b;
         try {
             if (!req.file)
                 throw failure_1.Failure.badRequest('No file uploaded');
             const request = {
                 email: String(req.headers[constant_1.CONSTANT.HEADERS.EMAIL]),
-                imageUrl: `${config_1.CONFIG.APP.IMAGE_STATIC_URL}/${(_b = req.file) === null || _b === void 0 ? void 0 : _b.filename}`
+                imageUrl: `${config_1.CONFIG.APP.IMAGE_STATIC_URL}/${req.file.filename}`
             };
             const validatedRequest = yield membership_dto_1.MembershipValidator.validateUpdateProfileImageByEmailRequest(request);
             yield membership_service_1.MembershipService.updateProfileImageByEmail({

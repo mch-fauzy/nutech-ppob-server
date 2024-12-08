@@ -16,6 +16,9 @@
     "tags": [
         {
             "name": "Module Membership"
+        },
+        {
+            "name": "Module Information"
         }
     ],
     "paths": {
@@ -166,7 +169,7 @@
                     "content": {
                         "multipart/form-data": {
                             "schema": {
-                                "$ref": "#/components/schemas/userProfileImageUpdate"
+                                "$ref": "#/components/schemas/userUpdateProfileImage"
                             }
                         }
                     }
@@ -188,6 +191,51 @@
                     },
                     "404": {
                         "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/v1/banner": {
+            "get": {
+                "tags": [
+                    "Module Information"
+                ],
+                "summary": "Get banner list",
+                "operationId": "getBannerList",
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/v1/services": {
+            "get": {
+                "tags": [
+                    "Module Information"
+                ],
+                "summary": "Get service list",
+                "operationId": "getServiceList",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -245,33 +293,12 @@
                     }
                 }
             },
-            "userProfileImageUpdate": {
+            "userUpdateProfileImage": {
                 "type": "object",
                 "properties": {
                     "image": {
                         "type": "string",
                         "format": "binary"
-                    }
-                }
-            },
-            "createProduct": {
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "type": "string",
-                        "example": "My New Product"
-                    },
-                    "description": {
-                        "type": "string",
-                        "example": "State of the art product with affordable price"
-                    },
-                    "price": {
-                        "type": "number",
-                        "example": 123987
-                    },
-                    "available": {
-                        "type": "boolean",
-                        "example": true
                     }
                 }
             }
