@@ -38,9 +38,9 @@ type UserCreate = Pick<User, 'id' | 'email' | 'password' | 'firstName' | 'lastNa
 
 type UserUpdate = Pick<User, 'firstName' | 'lastName' | 'updatedBy' | 'updatedAt'>;
 
-type UserProfileImageUpdate = Pick<User, 'profileImage' | 'updatedBy' | 'updatedAt'>;
+type UserUpdateProfileImage = Pick<User, 'profileImage' | 'updatedBy' | 'updatedAt'>;
 
-type UserBalanceUpdate = Pick<User, 'balance' | 'updatedBy' | 'updatedAt'>;
+type UserUpdateBalance = Pick<User, 'balance' | 'updatedBy' | 'updatedAt'>;
 
 export {
     userDbField,
@@ -48,6 +48,6 @@ export {
     UserPrimaryId,
     UserCreate,
     UserUpdate,
-    UserProfileImageUpdate,
-    UserBalanceUpdate
+    UserUpdateProfileImage,
+    UserUpdateBalance
 };

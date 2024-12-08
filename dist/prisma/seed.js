@@ -9,9 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const client_1 = require("@prisma/client");
 const prisma_client_1 = require("../configs/prisma-client");
 const winston_1 = require("../configs/winston");
-const bannersInsertQuery = prisma_client_1.prisma.$executeRaw `
+const bannersInsertQuery = client_1.Prisma.sql `
 INSERT INTO nutech_banners (banner_name, banner_image, description, updated_at)
 VALUES
   ('Banner 1', 'https://minio.nutech-integrasi.com/take-home-test/banner/Banner-1.png', 'Lerem Ipsum Dolor sit amet', NOW()),
@@ -20,7 +21,7 @@ VALUES
   ('Banner 4', 'https://minio.nutech-integrasi.com/take-home-test/banner/Banner-4.png', 'Lerem Ipsum Dolor sit amet', NOW()),
   ('Banner 5', 'https://minio.nutech-integrasi.com/take-home-test/banner/Banner-5.png', 'Lerem Ipsum Dolor sit amet', NOW());
 `;
-const servicesInsertQuery = prisma_client_1.prisma.$executeRaw `
+const servicesInsertQuery = client_1.Prisma.sql `
 INSERT INTO nutech_services (service_code, service_name, service_icon, service_tariff, updated_at)
 VALUES
   ('PAJAK', 'Pajak PBB', 'https://minio.nutech-integrasi.com/take-home-test/services/PBB.png', 40000, NOW()),
@@ -38,9 +39,9 @@ VALUES
 `;
 const seed = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield prisma_client_1.prisma.$transaction([
-            bannersInsertQuery,
-            servicesInsertQuery
+        yield prisma_client_1.prismaClient.$transaction([
+            prisma_client_1.prismaClient.$executeRaw(bannersInsertQuery),
+            prisma_client_1.prismaClient.$executeRaw(servicesInsertQuery)
         ]);
         winston_1.logger.info('Seeding complete');
     }

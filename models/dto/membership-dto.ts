@@ -13,6 +13,21 @@ interface MembershipLoginRequest {
     password: string;
 }
 
+interface MembershipGetByEmailRequest {
+    email: string;
+}
+
+interface MembershipUpdateByEmailRequest {
+    email: string;
+    firstName: string;
+    lastName: string;
+}
+
+interface MembershipUpdateProfileImageByEmailRequest {
+    email: string;
+    imageUrl: string;
+}
+
 interface MembershipLoginResponse {
     token: string;
 }
@@ -41,11 +56,41 @@ class MembershipValidator {
     static validateLoginRequest = async (req: MembershipLoginRequest): Promise<MembershipLoginRequest> => {
         return await this.loginRequestValidator.validateAsync(req);
     };
+
+    private static getByEmailRequestValidator = Joi.object({
+        email: Joi.string().email().required(),
+    });
+
+    static validateGetByEmailRequest = async (req: MembershipGetByEmailRequest): Promise<MembershipGetByEmailRequest> => {
+        return await this.getByEmailRequestValidator.validateAsync(req);
+    };
+
+    private static updateByEmailRequestValidator = Joi.object({
+        email: Joi.string().email().required(),
+        firstName: Joi.string().required(),
+        lastName: Joi.string().required()
+    });
+
+    static validateUpdateByEmailRequest = async (req: MembershipUpdateByEmailRequest): Promise<MembershipUpdateByEmailRequest> => {
+        return await this.updateByEmailRequestValidator.validateAsync(req);
+    };
+
+    private static updateProfileImageByEmailRequestValidator = Joi.object({
+        email: Joi.string().email().required(),
+        imageUrl: Joi.string().uri().required()
+    });
+
+    static validateUpdateProfileImageByEmailRequest = async (req: MembershipUpdateProfileImageByEmailRequest): Promise<MembershipUpdateProfileImageByEmailRequest> => {
+        return await this.updateProfileImageByEmailRequestValidator.validateAsync(req);
+    };
 }
 
 export {
     MembershipRegisterRequest,
     MembershipLoginRequest,
+    MembershipGetByEmailRequest,
+    MembershipUpdateByEmailRequest,
+    MembershipUpdateProfileImageByEmailRequest,
     MembershipTokenPayload,
     MembershipLoginResponse,
     MembershipValidator

@@ -1,3 +1,6 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CONSTANT = void 0;
 const CONSTANT = {
     JWT: {
         EXPIRY: 60 * 60 * 12
@@ -24,7 +27,6 @@ const CONSTANT = {
         UNAUTHORIZED: 108,
         INTERNAL_SERVER_ERROR: 109
     },
-    ALLOWED_IMAGE_FORMATS: ['image/jpeg', 'image/png'] as string[]
-} as const;
-
-export { CONSTANT };
+    ALLOWED_IMAGE_FORMATS: ['image/jpeg', 'image/png']
+};
+exports.CONSTANT = CONSTANT;
