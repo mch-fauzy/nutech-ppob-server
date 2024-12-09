@@ -7,6 +7,7 @@ Live demo [_here_](https://nutech-ppob-server.vercel.app/)
 * [Technologies Used](#technologies-used)
 * [Features](#features)
 * [Setup](#setup)
+- [ERD](#ERD)
 
 ## Technologies Used
 - NodeJS - version 20.11.1
@@ -79,4 +80,7 @@ To run this project in local, follow the steps below:
 12. If you do not want to run in local, just access link below for live demo:
 
     [Live Demo](https://nutech-ppob-server.vercel.app/)
-    
+
+## ERD
+
+![Entity-Relationship Diagram](docs/nutech-ppob-server-ddl.png)
