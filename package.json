@@ -9,9 +9,11 @@
         "dev": "dotenv -e .env.development node dist/server.js",
         "prod": "dotenv -e .env.production node dist/server.js",
         "seed:dev": "dotenv -e .env.development ts-node prisma/seed.ts",
+        "seed:prod": "dotenv -e .env.production ts-node prisma/seed.ts",
         "postinstall": "prisma generate",
         "prismamigrate:dev": "dotenv -e .env.development prisma migrate dev",
         "prismamigrate:prod": "dotenv -e .env.production prisma migrate dev",
+        "prismamigrateexisting:prod": "dotenv -e .env.production prisma migrate deploy",
         "prismagenerate": "prisma generate"
     },
     "keywords": [],

@@ -18,7 +18,7 @@ const imageValidation = (req: Request, file: Express.Multer.File, cb: FileFilter
 // Storage Configuration
 const localStorage: StorageEngine = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, `${CONFIG.APP.IMAGE_STORAGE_PATH!}`); // Directory where files are stored
+        cb(null, CONFIG.APP.IMAGE_STORAGE_PATH!); // Directory where files are stored
     },
     filename: (req, file, cb) => {
         // Generate a unique filename with the original extension
