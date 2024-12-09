@@ -2,7 +2,7 @@
     "openapi": "3.0.3",
     "info": {
         "title": "Nutech PPOB Server",
-        "description": "REST API server that handles users, transactions, and information related feature",
+        "description": "Backend server built with NodeJS and Postgresql for managing users, services, banners, and transactions",
         "version": "1.0.0"
     },
     "servers": [

@@ -7,7 +7,7 @@ Live demo [_here_](https://nutech-ppob-server.vercel.app/)
 * [Technologies Used](#technologies-used)
 * [Features](#features)
 * [Setup](#setup)
-- [ERD](#ERD)
+* [ERD](#ERD)
 
 ## Technologies Used
 - NodeJS - version 20.11.1
