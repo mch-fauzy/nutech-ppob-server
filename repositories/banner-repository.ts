@@ -2,7 +2,10 @@ import { Prisma } from '@prisma/client';
 
 import { prismaClient } from '../configs/prisma-client';
 import { logger } from '../configs/winston';
-import { Banner } from '../models/banner-model';
+import {
+    Banner,
+    BannerDb
+} from '../models/banner-model';
 import { Filter } from '../models/filter';
 import { Failure } from '../utils/failure';
 
@@ -50,7 +53,7 @@ class BannerRepository {
             // Handle sort
             const orderByClause = sorts && sorts.length > 0
                 ? Prisma.join(
-                    sorts.map(({ field, order }) => Prisma.sql`${Prisma.raw(field)} ${order}`),
+                    sorts.map(({ field, order }) => Prisma.sql`${Prisma.raw(field)} ${Prisma.raw(order)}`),
                     ', '
                 )
                 : undefined;
@@ -60,8 +63,10 @@ class BannerRepository {
                 : Prisma.sql``;
 
             // Handle pagination
-            const limit = pagination ? Prisma.sql`LIMIT ${pagination.pageSize}` : Prisma.sql``;
-            const offset = pagination ? Prisma.sql`OFFSET ${(pagination.page - 1) * pagination.pageSize}` : Prisma.sql``;
+            const limit = pagination && pagination.pageSize !== undefined ? Prisma.sql`LIMIT ${pagination.pageSize}` : Prisma.sql``;
+            const offset = pagination && pagination.pageSize !== undefined
+                ? Prisma.sql`OFFSET ${(pagination.page - 1) * pagination.pageSize}`
+                : Prisma.sql``;
 
             // Query
             const bannersSelectQuery = Prisma.sql`
@@ -80,12 +85,24 @@ class BannerRepository {
             `;
 
             const [banners, totalBanners] = await prismaClient.$transaction([
-                prismaClient.$queryRaw<Banner[]>(bannersSelectQuery),
+                prismaClient.$queryRaw<BannerDb[]>(bannersSelectQuery),
                 prismaClient.$queryRaw<{ count: bigint }[]>(bannersCountQuery),
             ]);
 
-            return [banners, totalBanners[0].count];
+            const mappedBanners: Banner[] = banners.map(bannerDb => ({
+                id: bannerDb.id,
+                bannerName: bannerDb.banner_name,
+                bannerImage: bannerDb.banner_image,
+                description: bannerDb.description,
+                createdAt: bannerDb.created_at,
+                createdBy: bannerDb.created_by,
+                updatedAt: bannerDb.updated_at,
+                updatedBy: bannerDb.updated_by,
+                deletedAt: bannerDb.deleted_at,
+                deletedBy: bannerDb.deleted_by,
+            }));
 
+            return [mappedBanners, totalBanners[0].count];
         } catch (error) {
             logger.error(`[BannerRepository.findManyAndCountByFilter] Error finding and counting banners by filter: ${error}`);
             throw Failure.internalServer('Failed to find and count banners by filter');

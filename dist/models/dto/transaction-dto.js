@@ -21,11 +21,19 @@ class TransactionValidator {
 }
 exports.TransactionValidator = TransactionValidator;
 _a = TransactionValidator;
-TransactionValidator.getBalanceByEmailRequestValidator = joi_1.default.object({
+TransactionValidator.getByEmailRequestValidator = joi_1.default.object({
     email: joi_1.default.string().email().required(),
 });
-TransactionValidator.validateGetBalanceByEmailRequest = (req) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield _a.getBalanceByEmailRequestValidator.validateAsync(req);
+TransactionValidator.validateGetByEmailRequest = (req) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield _a.getByEmailRequestValidator.validateAsync(req);
+});
+TransactionValidator.getListByEmailRequestValidator = joi_1.default.object({
+    email: joi_1.default.string().email().required(),
+    page: joi_1.default.number().min(1).optional(),
+    pageSize: joi_1.default.number().min(1).optional(),
+});
+TransactionValidator.validateGetListByEmailRequest = (req) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield _a.getListByEmailRequestValidator.validateAsync(req);
 });
 TransactionValidator.topUpBalanceByEmailRequestValidator = joi_1.default.object({
     email: joi_1.default.string().email().required(),
@@ -37,8 +45,8 @@ TransactionValidator.validateTopUpBalanceByEmailRequest = (req) => __awaiter(voi
 });
 TransactionValidator.paymentByEmailRequestValidator = joi_1.default.object({
     email: joi_1.default.string().email().required(),
-    transactionType: joi_1.default.string().valid(transaction_model_1.TransactionType).required(),
-    serviceCode: joi_1.default.string().valid(service_model_1.ServiceCode).required()
+    transactionType: joi_1.default.string().valid(...Object.values(transaction_model_1.TransactionType)).required(),
+    serviceCode: joi_1.default.string().valid(...Object.values(service_model_1.ServiceCode)).required()
 });
 TransactionValidator.validatePaymentByEmailRequest = (req) => __awaiter(void 0, void 0, void 0, function* () {
     return yield _a.paymentByEmailRequestValidator.validateAsync(req);

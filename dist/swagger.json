@@ -308,6 +308,92 @@
                     }
                 }
             }
+        },
+        "/v1/transaction": {
+            "post": {
+                "tags": [
+                    "Module Transaction"
+                ],
+                "summary": "Payment transaction for current user",
+                "operationId": "paymentForCurrentUser",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/transactionPayment"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/v1/transaction/history": {
+            "get": {
+                "tags": [
+                    "Module Transaction"
+                ],
+                "summary": "Get transaction list for current user",
+                "operationId": "getListForCurrentUser",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number for pagination (offset + 1)",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "page_size",
+                        "in": "query",
+                        "description": "Number of items per page (limit)",
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -374,6 +460,15 @@
                     "topUpAmount": {
                         "type": "number",
                         "example": 100000
+                    }
+                }
+            },
+            "transactionPayment": {
+                "type": "object",
+                "properties": {
+                    "serviceCode": {
+                        "type": "string",
+                        "example": "PULSA"
                     }
                 }
             }

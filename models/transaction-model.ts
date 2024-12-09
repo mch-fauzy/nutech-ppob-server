@@ -19,6 +19,21 @@ enum TransactionType {
     PAYMENT = "PAYMENT"
 }
 
+interface TransactionDb {
+    id: number;
+    user_id: string;
+    service_id: number | null;
+    transaction_type: TransactionType;
+    total_amount: number;
+    invoice_number: string;
+    created_at: Date;
+    created_by: string | null;
+    updated_at: Date;
+    updated_by: string | null;
+    deleted_at: Date | null;
+    deleted_by: string | null;
+}
+
 interface Transaction {
     id: number;
     userId: string;
@@ -41,6 +56,7 @@ type TransactionCreate = Pick<Transaction, 'userId' | 'serviceId' | 'transaction
 export {
     transactionDbField,
     TransactionType,
+    TransactionDb,
     Transaction,
     TransactionPrimaryId,
     TransactionCreate

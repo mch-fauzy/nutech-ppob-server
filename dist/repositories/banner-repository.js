@@ -51,14 +51,16 @@ BannerRepository.findManyAndCountByFilter = (filter) => __awaiter(void 0, void 0
             : client_1.Prisma.sql ``;
         // Handle sort
         const orderByClause = sorts && sorts.length > 0
-            ? client_1.Prisma.join(sorts.map(({ field, order }) => client_1.Prisma.sql `${client_1.Prisma.raw(field)} ${order}`), ', ')
+            ? client_1.Prisma.join(sorts.map(({ field, order }) => client_1.Prisma.sql `${client_1.Prisma.raw(field)} ${client_1.Prisma.raw(order)}`), ', ')
             : undefined;
         const orderBy = orderByClause
             ? client_1.Prisma.sql `ORDER BY ${orderByClause}`
             : client_1.Prisma.sql ``;
         // Handle pagination
-        const limit = pagination ? client_1.Prisma.sql `LIMIT ${pagination.pageSize}` : client_1.Prisma.sql ``;
-        const offset = pagination ? client_1.Prisma.sql `OFFSET ${(pagination.page - 1) * pagination.pageSize}` : client_1.Prisma.sql ``;
+        const limit = pagination && pagination.pageSize !== undefined ? client_1.Prisma.sql `LIMIT ${pagination.pageSize}` : client_1.Prisma.sql ``;
+        const offset = pagination && pagination.pageSize !== undefined
+            ? client_1.Prisma.sql `OFFSET ${(pagination.page - 1) * pagination.pageSize}`
+            : client_1.Prisma.sql ``;
         // Query
         const bannersSelectQuery = client_1.Prisma.sql `
                 SELECT ${select}
@@ -77,7 +79,19 @@ BannerRepository.findManyAndCountByFilter = (filter) => __awaiter(void 0, void 0
             prisma_client_1.prismaClient.$queryRaw(bannersSelectQuery),
             prisma_client_1.prismaClient.$queryRaw(bannersCountQuery),
         ]);
-        return [banners, totalBanners[0].count];
+        const mappedBanners = banners.map(bannerDb => ({
+            id: bannerDb.id,
+            bannerName: bannerDb.banner_name,
+            bannerImage: bannerDb.banner_image,
+            description: bannerDb.description,
+            createdAt: bannerDb.created_at,
+            createdBy: bannerDb.created_by,
+            updatedAt: bannerDb.updated_at,
+            updatedBy: bannerDb.updated_by,
+            deletedAt: bannerDb.deleted_at,
+            deletedBy: bannerDb.deleted_by,
+        }));
+        return [mappedBanners, totalBanners[0].count];
     }
     catch (error) {
         winston_1.logger.error(`[BannerRepository.findManyAndCountByFilter] Error finding and counting banners by filter: ${error}`);

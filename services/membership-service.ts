@@ -1,7 +1,4 @@
-import {
-    v4 as uuidv4,
-    validate as validateUuid
-} from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 
 import { logger } from '../configs/winston';
 import { UserRepository } from '../repositories/user-repository';
@@ -33,8 +30,6 @@ class MembershipService {
             if (totalUsers !== BigInt(0)) throw Failure.conflict('User with this email already exists');
 
             const id = uuidv4();
-            if (!validateUuid(id)) throw Failure.badRequest('Invalid UUID format');
-
             const hashedPassword = await hashPassword(req.password);
             await UserRepository.create({
                 id,
@@ -70,12 +65,13 @@ class MembershipService {
                 }]
             });
             if (totalUsers === BigInt(0)) throw Failure.invalidCredentials('Invalid email or password');
+            const user = users[0];
 
-            const isValidPassword = await comparePassword(req.password, users[0].password);
+            const isValidPassword = await comparePassword(req.password, user.password);
             if (!isValidPassword) throw Failure.invalidCredentials('Invalid email or password');
 
             const response = generateToken({
-                email: users[0].email
+                email: user.email
             });
 
             return response;
@@ -103,8 +99,9 @@ class MembershipService {
                 }]
             });
             if (totalUsers === BigInt(0)) throw Failure.notFound('User with this email not found');
+            const user = users[0];
 
-            return users[0]
+            return user
         } catch (error) {
             if (error instanceof Failure) throw error;
 
@@ -126,8 +123,9 @@ class MembershipService {
                 }]
             });
             if (totalUsers === BigInt(0)) throw Failure.notFound('User with this email not found');
+            const user = users[0];
 
-            const userPrimaryId: UserPrimaryId = { id: users[0].id }
+            const userPrimaryId: UserPrimaryId = { id: user.id }
             await UserRepository.updateById(userPrimaryId, {
                 firstName: req.firstName,
                 lastName: req.lastName,

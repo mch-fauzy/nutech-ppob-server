@@ -4,7 +4,7 @@ import { prismaClient } from '../configs/prisma-client';
 import { logger } from '../configs/winston';
 import { Filter } from '../models/filter';
 import { Failure } from '../utils/failure';
-import { Service } from '../models/service-model';
+import { Service, ServiceDb } from '../models/service-model';
 
 class ServiceRepository {
 
@@ -50,7 +50,7 @@ class ServiceRepository {
             // Handle sort
             const orderByClause = sorts && sorts.length > 0
                 ? Prisma.join(
-                    sorts.map(({ field, order }) => Prisma.sql`${Prisma.raw(field)} ${order}`),
+                    sorts.map(({ field, order }) => Prisma.sql`${Prisma.raw(field)} ${Prisma.raw(order)}`),
                     ', '
                 )
                 : undefined;
@@ -60,8 +60,10 @@ class ServiceRepository {
                 : Prisma.sql``;
 
             // Handle pagination
-            const limit = pagination ? Prisma.sql`LIMIT ${pagination.pageSize}` : Prisma.sql``;
-            const offset = pagination ? Prisma.sql`OFFSET ${(pagination.page - 1) * pagination.pageSize}` : Prisma.sql``;
+            const limit = pagination && pagination.pageSize !== undefined ? Prisma.sql`LIMIT ${pagination.pageSize}` : Prisma.sql``;
+            const offset = pagination && pagination.pageSize !== undefined
+                ? Prisma.sql`OFFSET ${(pagination.page - 1) * pagination.pageSize}`
+                : Prisma.sql``;
 
             // Query
             const servicesSelectQuery = Prisma.sql`
@@ -80,12 +82,25 @@ class ServiceRepository {
             `;
 
             const [services, totalServices] = await prismaClient.$transaction([
-                prismaClient.$queryRaw<Service[]>(servicesSelectQuery),
+                prismaClient.$queryRaw<ServiceDb[]>(servicesSelectQuery),
                 prismaClient.$queryRaw<{ count: bigint }[]>(servicesCountQuery),
             ]);
 
-            return [services, totalServices[0].count];
+            const mappedServices: Service[] = services.map(serviceDb => ({
+                id: serviceDb.id,
+                serviceCode: serviceDb.service_code,
+                serviceName: serviceDb.service_name,
+                serviceIcon: serviceDb.service_icon,
+                serviceTariff: serviceDb.service_tariff,
+                createdAt: serviceDb.created_at,
+                createdBy: serviceDb.created_by,
+                updatedAt: serviceDb.updated_at,
+                updatedBy: serviceDb.updated_by,
+                deletedAt: serviceDb.deleted_at,
+                deletedBy: serviceDb.deleted_by,
+            }));
 
+            return [mappedServices, totalServices[0].count];
         } catch (error) {
             logger.error(`[ServiceRepository.findManyAndCountByFilter] Error finding and counting services by filter: ${error}`);
             throw Failure.internalServer('Failed to find and count services by filter');

@@ -28,6 +28,20 @@ enum ServiceCode {
     ZAKAT = "ZAKAT"
 }
 
+interface ServiceDb {
+    id: number;
+    service_code: ServiceCode;
+    service_name: string;
+    service_icon: string;
+    service_tariff: number;
+    created_at: Date;
+    created_by: string | null;
+    updated_at: Date;
+    updated_by: string | null;
+    deleted_at: Date | null;
+    deleted_by: string | null;
+}
+
 interface Service {
     id: number;
     serviceCode: ServiceCode;
@@ -45,5 +59,6 @@ interface Service {
 export {
     serviceDbField,
     ServiceCode,
+    ServiceDb,
     Service,
 };

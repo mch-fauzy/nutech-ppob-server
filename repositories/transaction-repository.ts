@@ -4,7 +4,8 @@ import { prismaClient } from '../configs/prisma-client';
 import { logger } from '../configs/winston';
 import {
     Transaction,
-    TransactionCreate
+    TransactionCreate,
+    TransactionDb
 } from '../models/transaction-model';
 import { Filter } from '../models/filter';
 import { Failure } from '../utils/failure';
@@ -24,7 +25,7 @@ class TransactionRepository {
                     updated_at
                 )
                 VALUES (
-                    ${data.userId}::uuid, 
+                    ${data.userId}, 
                     ${data.serviceId}, 
                     ${data.transactionType}, 
                     ${data.totalAmount}, 
@@ -85,7 +86,7 @@ class TransactionRepository {
             // Handle sort
             const orderByClause = sorts && sorts.length > 0
                 ? Prisma.join(
-                    sorts.map(({ field, order }) => Prisma.sql`${Prisma.raw(field)} ${order}`),
+                    sorts.map(({ field, order }) => Prisma.sql`${Prisma.raw(field)} ${Prisma.raw(order)}`),
                     ', '
                 )
                 : undefined;
@@ -95,8 +96,10 @@ class TransactionRepository {
                 : Prisma.sql``;
 
             // Handle pagination
-            const limit = pagination ? Prisma.sql`LIMIT ${pagination.pageSize}` : Prisma.sql``;
-            const offset = pagination ? Prisma.sql`OFFSET ${(pagination.page - 1) * pagination.pageSize}` : Prisma.sql``;
+            const limit = pagination && pagination.pageSize !== undefined ? Prisma.sql`LIMIT ${pagination.pageSize}` : Prisma.sql``;
+            const offset = pagination && pagination.pageSize !== undefined
+                ? Prisma.sql`OFFSET ${(pagination.page - 1) * pagination.pageSize}`
+                : Prisma.sql``;
 
             // Query
             const transactionsSelectQuery = Prisma.sql`
@@ -115,11 +118,26 @@ class TransactionRepository {
             `;
 
             const [transactions, totalTransactions] = await prismaClient.$transaction([
-                prismaClient.$queryRaw<Transaction[]>(transactionsSelectQuery),
+                prismaClient.$queryRaw<TransactionDb[]>(transactionsSelectQuery),
                 prismaClient.$queryRaw<{ count: bigint }[]>(transactionsCountQuery),
             ]);
 
-            return [transactions, totalTransactions[0].count];
+            const mappedTransactions: Transaction[] = transactions.map(transactionDb => ({
+                id: transactionDb.id,
+                userId: transactionDb.user_id,
+                serviceId: transactionDb.service_id,
+                transactionType: transactionDb.transaction_type,
+                totalAmount: transactionDb.total_amount,
+                invoiceNumber: transactionDb.invoice_number,
+                createdAt: transactionDb.created_at,
+                createdBy: transactionDb.created_by,
+                updatedAt: transactionDb.updated_at,
+                updatedBy: transactionDb.updated_by,
+                deletedAt: transactionDb.deleted_at,
+                deletedBy: transactionDb.deleted_by,
+            }));
+
+            return [mappedTransactions, totalTransactions[0].count];
         } catch (error) {
             logger.error(`[TransactionRepository.findManyAndCountByFilter] Error finding and counting transactions by filter: ${error}`);
             throw Failure.internalServer('Failed to find and count transactions by filter');

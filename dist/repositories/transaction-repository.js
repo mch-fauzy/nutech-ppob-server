@@ -33,7 +33,7 @@ TransactionRepository.create = (data) => __awaiter(void 0, void 0, void 0, funct
                     updated_at
                 )
                 VALUES (
-                    ${data.userId}::uuid, 
+                    ${data.userId}, 
                     ${data.serviceId}, 
                     ${data.transactionType}, 
                     ${data.totalAmount}, 
@@ -83,14 +83,16 @@ TransactionRepository.findManyAndCountByFilter = (filter) => __awaiter(void 0, v
             : client_1.Prisma.sql ``;
         // Handle sort
         const orderByClause = sorts && sorts.length > 0
-            ? client_1.Prisma.join(sorts.map(({ field, order }) => client_1.Prisma.sql `${client_1.Prisma.raw(field)} ${order}`), ', ')
+            ? client_1.Prisma.join(sorts.map(({ field, order }) => client_1.Prisma.sql `${client_1.Prisma.raw(field)} ${client_1.Prisma.raw(order)}`), ', ')
             : undefined;
         const orderBy = orderByClause
             ? client_1.Prisma.sql `ORDER BY ${orderByClause}`
             : client_1.Prisma.sql ``;
         // Handle pagination
-        const limit = pagination ? client_1.Prisma.sql `LIMIT ${pagination.pageSize}` : client_1.Prisma.sql ``;
-        const offset = pagination ? client_1.Prisma.sql `OFFSET ${(pagination.page - 1) * pagination.pageSize}` : client_1.Prisma.sql ``;
+        const limit = pagination && pagination.pageSize !== undefined ? client_1.Prisma.sql `LIMIT ${pagination.pageSize}` : client_1.Prisma.sql ``;
+        const offset = pagination && pagination.pageSize !== undefined
+            ? client_1.Prisma.sql `OFFSET ${(pagination.page - 1) * pagination.pageSize}`
+            : client_1.Prisma.sql ``;
         // Query
         const transactionsSelectQuery = client_1.Prisma.sql `
                 SELECT ${select}
@@ -109,7 +111,21 @@ TransactionRepository.findManyAndCountByFilter = (filter) => __awaiter(void 0, v
             prisma_client_1.prismaClient.$queryRaw(transactionsSelectQuery),
             prisma_client_1.prismaClient.$queryRaw(transactionsCountQuery),
         ]);
-        return [transactions, totalTransactions[0].count];
+        const mappedTransactions = transactions.map(transactionDb => ({
+            id: transactionDb.id,
+            userId: transactionDb.user_id,
+            serviceId: transactionDb.service_id,
+            transactionType: transactionDb.transaction_type,
+            totalAmount: transactionDb.total_amount,
+            invoiceNumber: transactionDb.invoice_number,
+            createdAt: transactionDb.created_at,
+            createdBy: transactionDb.created_by,
+            updatedAt: transactionDb.updated_at,
+            updatedBy: transactionDb.updated_by,
+            deletedAt: transactionDb.deleted_at,
+            deletedBy: transactionDb.deleted_by,
+        }));
+        return [mappedTransactions, totalTransactions[0].count];
     }
     catch (error) {
         winston_1.logger.error(`[TransactionRepository.findManyAndCountByFilter] Error finding and counting transactions by filter: ${error}`);

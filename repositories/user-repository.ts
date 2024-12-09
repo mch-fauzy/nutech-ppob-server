@@ -9,7 +9,8 @@ import {
     userDbField,
     UserPrimaryId,
     UserUpdateProfileImage,
-    UserUpdate
+    UserUpdate,
+    UserDb
 } from '../models/user-model';
 import { Filter } from '../models/filter';
 import { Failure } from '../utils/failure';
@@ -32,7 +33,7 @@ class UserRepository {
                     updated_at
                 )
                 VALUES (
-                    ${data.id}::uuid, 
+                    ${data.id}, 
                     ${data.email}, 
                     ${data.password}, 
                     ${data.firstName}, 
@@ -67,7 +68,7 @@ class UserRepository {
             await prismaClient.$executeRaw`
                 UPDATE nutech_users
                 SET ${update}
-                WHERE id = ${primaryId.id}::uuid
+                WHERE id = ${primaryId.id}
             `;
         } catch (error) {
             if (error instanceof Failure) throw error;
@@ -119,7 +120,7 @@ class UserRepository {
             // Handle sort
             const orderByClause = sorts && sorts.length > 0
                 ? Prisma.join(
-                    sorts.map(({ field, order }) => Prisma.sql`${Prisma.raw(field)} ${order}`),
+                    sorts.map(({ field, order }) => Prisma.sql`${Prisma.raw(field)} ${Prisma.raw(order)}`),
                     ', '
                 )
                 : undefined;
@@ -129,8 +130,10 @@ class UserRepository {
                 : Prisma.sql``;
 
             // Handle pagination
-            const limit = pagination ? Prisma.sql`LIMIT ${pagination.pageSize}` : Prisma.sql``;
-            const offset = pagination ? Prisma.sql`OFFSET ${(pagination.page - 1) * pagination.pageSize}` : Prisma.sql``;
+            const limit = pagination && pagination.pageSize !== undefined ? Prisma.sql`LIMIT ${pagination.pageSize}` : Prisma.sql``;
+            const offset = pagination && pagination.pageSize !== undefined
+                ? Prisma.sql`OFFSET ${(pagination.page - 1) * pagination.pageSize}`
+                : Prisma.sql``;
 
             // Query
             const usersSelectQuery = Prisma.sql`
@@ -149,11 +152,27 @@ class UserRepository {
             `;
 
             const [users, totalUsers] = await prismaClient.$transaction([
-                prismaClient.$queryRaw<User[]>(usersSelectQuery),
+                prismaClient.$queryRaw<UserDb[]>(usersSelectQuery),
                 prismaClient.$queryRaw<{ count: bigint }[]>(usersCountQuery),
             ]);
 
-            return [users, totalUsers[0].count];
+            const mappedUsers: User[] = users.map(userDb => ({
+                id: userDb.id,
+                email: userDb.email,
+                password: userDb.password,
+                firstName: userDb.first_name,
+                lastName: userDb.last_name,
+                profileImage: userDb.profile_image,
+                balance: userDb.balance,
+                createdAt: userDb.created_at,
+                createdBy: userDb.created_by,
+                updatedAt: userDb.updated_at,
+                updatedBy: userDb.updated_by,
+                deletedAt: userDb.deleted_at,
+                deletedBy: userDb.deleted_by,
+            }));
+
+            return [mappedUsers, totalUsers[0].count];
         } catch (error) {
             logger.error(`[UserRepository.findManyAndCountByFilter] Error finding and counting users by filter: ${error}`);
             throw Failure.internalServer('Failed to find and count users by filter');
@@ -204,7 +223,7 @@ class UserRepository {
                 SELECT EXISTS (
                     SELECT 1
                     FROM nutech_users
-                    WHERE id = ${primaryId.id}::uuid
+                    WHERE id = ${primaryId.id}
                 ) as exists
             `;
 

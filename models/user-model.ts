@@ -15,6 +15,22 @@ const userDbField = {
     deletedBy: 'deleted_by'
 } as const;
 
+interface UserDb {
+    id: string;
+    email: string;
+    password: string;
+    first_name: string;
+    last_name: string;
+    profile_image: string | null;
+    balance: number;
+    created_at: Date;
+    created_by: string | null;
+    updated_at: Date;
+    updated_by: string | null;
+    deleted_at: Date | null;
+    deleted_by: string | null;
+}
+
 interface User {
     id: string;
     email: string;
@@ -44,6 +60,7 @@ type UserUpdateBalance = Pick<User, 'balance' | 'updatedBy' | 'updatedAt'>;
 
 export {
     userDbField,
+    UserDb,
     User,
     UserPrimaryId,
     UserCreate,

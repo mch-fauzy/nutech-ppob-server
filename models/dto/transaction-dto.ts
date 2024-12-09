@@ -3,8 +3,13 @@ import Joi from "joi";
 import { TransactionType } from "../transaction-model";
 import { ServiceCode } from "../service-model";
 
-interface TransactionGetBalanceByEmailRequest {
+interface TransactionGetByEmailRequest {
     email: string;
+}
+
+interface TransactionGetListByEmailRequest extends TransactionGetByEmailRequest {
+    page: number;
+    pageSize?: number;
 }
 
 interface TransactionBaseRequest {
@@ -20,13 +25,46 @@ interface TransactionPaymentByEmailRequest extends TransactionBaseRequest {
     serviceCode: ServiceCode;
 }
 
+interface TransactionResponse {
+    invoiceNumber: string;
+    serviceCode: string;
+    serviceName: string;
+    transactionType: string;
+    totalAmount: number;
+    createdAt: string;
+}
+
+interface TransactionListResponse {
+    invoiceNumber: string;
+    transactionType: string;
+    description: string | null;
+    totalAmount: number;
+    createdAt: string;
+}
+
+interface TransactionListWithPaginationResponse {
+    page: number
+    pageSize: number | null
+    records: TransactionListResponse[]
+}
+
 class TransactionValidator {
-    private static getBalanceByEmailRequestValidator = Joi.object({
+    private static getByEmailRequestValidator = Joi.object({
         email: Joi.string().email().required(),
     });
 
-    static validateGetBalanceByEmailRequest = async (req: TransactionGetBalanceByEmailRequest): Promise<TransactionGetBalanceByEmailRequest> => {
-        return await this.getBalanceByEmailRequestValidator.validateAsync(req);
+    static validateGetByEmailRequest = async (req: TransactionGetByEmailRequest): Promise<TransactionGetByEmailRequest> => {
+        return await this.getByEmailRequestValidator.validateAsync(req);
+    };
+
+    private static getListByEmailRequestValidator = Joi.object({
+        email: Joi.string().email().required(),
+        page: Joi.number().min(1).optional(),
+        pageSize: Joi.number().min(1).optional(),
+    });
+
+    static validateGetListByEmailRequest = async (req: TransactionGetListByEmailRequest): Promise<TransactionGetListByEmailRequest> => {
+        return await this.getListByEmailRequestValidator.validateAsync(req);
     };
 
     private static topUpBalanceByEmailRequestValidator = Joi.object({
@@ -51,8 +89,12 @@ class TransactionValidator {
 }
 
 export {
-    TransactionGetBalanceByEmailRequest,
+    TransactionGetByEmailRequest,
+    TransactionGetListByEmailRequest,
     TransactionTopUpBalanceByEmailRequest,
     TransactionPaymentByEmailRequest,
+    TransactionResponse,
+    TransactionListResponse,
+    TransactionListWithPaginationResponse,
     TransactionValidator
 };

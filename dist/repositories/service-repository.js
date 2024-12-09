@@ -51,14 +51,16 @@ ServiceRepository.findManyAndCountByFilter = (filter) => __awaiter(void 0, void 
             : client_1.Prisma.sql ``;
         // Handle sort
         const orderByClause = sorts && sorts.length > 0
-            ? client_1.Prisma.join(sorts.map(({ field, order }) => client_1.Prisma.sql `${client_1.Prisma.raw(field)} ${order}`), ', ')
+            ? client_1.Prisma.join(sorts.map(({ field, order }) => client_1.Prisma.sql `${client_1.Prisma.raw(field)} ${client_1.Prisma.raw(order)}`), ', ')
             : undefined;
         const orderBy = orderByClause
             ? client_1.Prisma.sql `ORDER BY ${orderByClause}`
             : client_1.Prisma.sql ``;
         // Handle pagination
-        const limit = pagination ? client_1.Prisma.sql `LIMIT ${pagination.pageSize}` : client_1.Prisma.sql ``;
-        const offset = pagination ? client_1.Prisma.sql `OFFSET ${(pagination.page - 1) * pagination.pageSize}` : client_1.Prisma.sql ``;
+        const limit = pagination && pagination.pageSize !== undefined ? client_1.Prisma.sql `LIMIT ${pagination.pageSize}` : client_1.Prisma.sql ``;
+        const offset = pagination && pagination.pageSize !== undefined
+            ? client_1.Prisma.sql `OFFSET ${(pagination.page - 1) * pagination.pageSize}`
+            : client_1.Prisma.sql ``;
         // Query
         const servicesSelectQuery = client_1.Prisma.sql `
                 SELECT ${select}
@@ -77,7 +79,20 @@ ServiceRepository.findManyAndCountByFilter = (filter) => __awaiter(void 0, void 
             prisma_client_1.prismaClient.$queryRaw(servicesSelectQuery),
             prisma_client_1.prismaClient.$queryRaw(servicesCountQuery),
         ]);
-        return [services, totalServices[0].count];
+        const mappedServices = services.map(serviceDb => ({
+            id: serviceDb.id,
+            serviceCode: serviceDb.service_code,
+            serviceName: serviceDb.service_name,
+            serviceIcon: serviceDb.service_icon,
+            serviceTariff: serviceDb.service_tariff,
+            createdAt: serviceDb.created_at,
+            createdBy: serviceDb.created_by,
+            updatedAt: serviceDb.updated_at,
+            updatedBy: serviceDb.updated_by,
+            deletedAt: serviceDb.deleted_at,
+            deletedBy: serviceDb.deleted_by,
+        }));
+        return [mappedServices, totalServices[0].count];
     }
     catch (error) {
         winston_1.logger.error(`[ServiceRepository.findManyAndCountByFilter] Error finding and counting services by filter: ${error}`);

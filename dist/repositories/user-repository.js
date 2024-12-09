@@ -37,7 +37,7 @@ UserRepository.create = (data) => __awaiter(void 0, void 0, void 0, function* ()
                     updated_at
                 )
                 VALUES (
-                    ${data.id}::uuid, 
+                    ${data.id}, 
                     ${data.email}, 
                     ${data.password}, 
                     ${data.firstName}, 
@@ -69,7 +69,7 @@ UserRepository.updateById = (primaryId, data) => __awaiter(void 0, void 0, void 
         yield prisma_client_1.prismaClient.$executeRaw `
                 UPDATE nutech_users
                 SET ${update}
-                WHERE id = ${primaryId.id}::uuid
+                WHERE id = ${primaryId.id}
             `;
     }
     catch (error) {
@@ -111,14 +111,16 @@ UserRepository.findManyAndCountByFilter = (filter) => __awaiter(void 0, void 0, 
             : client_1.Prisma.sql ``;
         // Handle sort
         const orderByClause = sorts && sorts.length > 0
-            ? client_1.Prisma.join(sorts.map(({ field, order }) => client_1.Prisma.sql `${client_1.Prisma.raw(field)} ${order}`), ', ')
+            ? client_1.Prisma.join(sorts.map(({ field, order }) => client_1.Prisma.sql `${client_1.Prisma.raw(field)} ${client_1.Prisma.raw(order)}`), ', ')
             : undefined;
         const orderBy = orderByClause
             ? client_1.Prisma.sql `ORDER BY ${orderByClause}`
             : client_1.Prisma.sql ``;
         // Handle pagination
-        const limit = pagination ? client_1.Prisma.sql `LIMIT ${pagination.pageSize}` : client_1.Prisma.sql ``;
-        const offset = pagination ? client_1.Prisma.sql `OFFSET ${(pagination.page - 1) * pagination.pageSize}` : client_1.Prisma.sql ``;
+        const limit = pagination && pagination.pageSize !== undefined ? client_1.Prisma.sql `LIMIT ${pagination.pageSize}` : client_1.Prisma.sql ``;
+        const offset = pagination && pagination.pageSize !== undefined
+            ? client_1.Prisma.sql `OFFSET ${(pagination.page - 1) * pagination.pageSize}`
+            : client_1.Prisma.sql ``;
         // Query
         const usersSelectQuery = client_1.Prisma.sql `
                 SELECT ${select}
@@ -137,7 +139,22 @@ UserRepository.findManyAndCountByFilter = (filter) => __awaiter(void 0, void 0, 
             prisma_client_1.prismaClient.$queryRaw(usersSelectQuery),
             prisma_client_1.prismaClient.$queryRaw(usersCountQuery),
         ]);
-        return [users, totalUsers[0].count];
+        const mappedUsers = users.map(userDb => ({
+            id: userDb.id,
+            email: userDb.email,
+            password: userDb.password,
+            firstName: userDb.first_name,
+            lastName: userDb.last_name,
+            profileImage: userDb.profile_image,
+            balance: userDb.balance,
+            createdAt: userDb.created_at,
+            createdBy: userDb.created_by,
+            updatedAt: userDb.updated_at,
+            updatedBy: userDb.updated_by,
+            deletedAt: userDb.deleted_at,
+            deletedBy: userDb.deleted_by,
+        }));
+        return [mappedUsers, totalUsers[0].count];
     }
     catch (error) {
         winston_1.logger.error(`[UserRepository.findManyAndCountByFilter] Error finding and counting users by filter: ${error}`);
@@ -184,7 +201,7 @@ UserRepository.existsById = (primaryId) => __awaiter(void 0, void 0, void 0, fun
                 SELECT EXISTS (
                     SELECT 1
                     FROM nutech_users
-                    WHERE id = ${primaryId.id}::uuid
+                    WHERE id = ${primaryId.id}
                 ) as exists
             `;
         return isUserAvailable[0].exists;

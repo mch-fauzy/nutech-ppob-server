@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE "nutech_users" (
-    "id" UUID NOT NULL,
+    "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "first_name" TEXT NOT NULL,
@@ -53,7 +53,7 @@ CREATE TABLE "nutech_banners" (
 -- CreateTable
 CREATE TABLE "nutech_transactions" (
     "id" SERIAL NOT NULL,
-    "user_id" UUID NOT NULL,
+    "user_id" TEXT NOT NULL,
     "service_id" INTEGER,
     "transaction_type" TEXT NOT NULL,
     "total_amount" DOUBLE PRECISION NOT NULL,

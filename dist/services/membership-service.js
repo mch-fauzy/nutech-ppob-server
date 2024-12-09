@@ -34,8 +34,6 @@ MembershipService.register = (req) => __awaiter(void 0, void 0, void 0, function
         if (totalUsers !== BigInt(0))
             throw failure_1.Failure.conflict('User with this email already exists');
         const id = (0, uuid_1.v4)();
-        if (!(0, uuid_1.validate)(id))
-            throw failure_1.Failure.badRequest('Invalid UUID format');
         const hashedPassword = yield (0, password_1.hashPassword)(req.password);
         yield user_repository_1.UserRepository.create({
             id,
@@ -71,11 +69,12 @@ MembershipService.login = (req) => __awaiter(void 0, void 0, void 0, function* (
         });
         if (totalUsers === BigInt(0))
             throw failure_1.Failure.invalidCredentials('Invalid email or password');
-        const isValidPassword = yield (0, password_1.comparePassword)(req.password, users[0].password);
+        const user = users[0];
+        const isValidPassword = yield (0, password_1.comparePassword)(req.password, user.password);
         if (!isValidPassword)
             throw failure_1.Failure.invalidCredentials('Invalid email or password');
         const response = (0, jwt_1.generateToken)({
-            email: users[0].email
+            email: user.email
         });
         return response;
     }
@@ -103,7 +102,8 @@ MembershipService.getByEmail = (req) => __awaiter(void 0, void 0, void 0, functi
         });
         if (totalUsers === BigInt(0))
             throw failure_1.Failure.notFound('User with this email not found');
-        return users[0];
+        const user = users[0];
+        return user;
     }
     catch (error) {
         if (error instanceof failure_1.Failure)
@@ -126,7 +126,8 @@ MembershipService.updateByEmail = (req) => __awaiter(void 0, void 0, void 0, fun
         });
         if (totalUsers === BigInt(0))
             throw failure_1.Failure.notFound('User with this email not found');
-        const userPrimaryId = { id: users[0].id };
+        const user = users[0];
+        const userPrimaryId = { id: user.id };
         yield user_repository_1.UserRepository.updateById(userPrimaryId, {
             firstName: req.firstName,
             lastName: req.lastName,

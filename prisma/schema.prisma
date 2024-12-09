@@ -8,7 +8,7 @@ datasource db {
 }
 
 model nutech_users {
-  id             String         @db.Uuid @id @default(uuid())
+  id             String         @db.Text @id @default(uuid())
   email          String         @db.Text @unique 
   password       String         @db.Text
   first_name     String         @db.Text
@@ -56,7 +56,7 @@ model nutech_banners {
 
 model nutech_transactions {
   id               Int       @db.Integer @id @default(autoincrement())
-  user_id          String    @db.Uuid
+  user_id          String    @db.Text
   service_id       Int?      @db.Integer
   transaction_type String    @db.Text
   total_amount     Float     @db.DoublePrecision

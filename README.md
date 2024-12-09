@@ -1,4 +1,6 @@
 # Nutech PPOB
+Backend server built with NodeJS and Postgresql for managing users, services, banners, and transactions. The project provides functionality to manage users' information, services, and banners, as well as handle transactions. It also includes database migrations and seeding to quickly set up the system
+
 Live demo [_here_](https://nutech-ppob-server.vercel.app/)
 
 ## Table of Contents
@@ -72,7 +74,9 @@ To run this project in local, follow the steps below:
     http://localhost:3000
     ```
 
-11. If you dont want to run locally, just access link below for live demo:
+11. If you access Swagger docs in local, do not forget to change the servers to localhost
+
+12. If you do not want to run in local, just access link below for live demo:
 
     [Live Demo](https://nutech-ppob-server.vercel.app/)
     
