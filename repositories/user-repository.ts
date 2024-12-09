@@ -154,7 +154,6 @@ class UserRepository {
             ]);
 
             return [users, totalUsers[0].count];
-
         } catch (error) {
             logger.error(`[UserRepository.findManyAndCountByFilter] Error finding and counting users by filter: ${error}`);
             throw Failure.internalServer('Failed to find and count users by filter');

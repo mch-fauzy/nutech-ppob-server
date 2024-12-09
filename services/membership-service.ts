@@ -108,8 +108,8 @@ class MembershipService {
         } catch (error) {
             if (error instanceof Failure) throw error;
 
-            logger.error(`[MembershipService.getById] Error retrieving user by id: ${error}`);
-            throw Failure.internalServer('Failed to retrieve user by id');
+            logger.error(`[MembershipService.getById] Error retrieving user by email: ${error}`);
+            throw Failure.internalServer('Failed to retrieve user by email');
         }
     };
 
