@@ -8,6 +8,7 @@ const express_1 = require("express");
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const membership_route_1 = require("./v1/membership-route");
 const information_route_1 = require("./v1/information-route");
+const transaction_route_1 = require("./v1/transaction-route");
 const config_1 = require("../configs/config");
 const winston_1 = require("../configs/winston");
 const swagger_json_1 = __importDefault(require("../swagger.json"));
@@ -22,6 +23,10 @@ const routes = [
     {
         path: '/v1',
         route: information_route_1.informationRouterV1,
+    },
+    {
+        path: '/v1',
+        route: transaction_route_1.transactionRouterV1,
     },
 ];
 routes.forEach((route) => {

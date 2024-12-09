@@ -19,6 +19,9 @@
         },
         {
             "name": "Module Information"
+        },
+        {
+            "name": "Module Transaction"
         }
     ],
     "paths": {
@@ -225,6 +228,31 @@
                 ],
                 "summary": "Get service list",
                 "operationId": "getServiceList",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/v1/balance": {
+            "get": {
+                "tags": [
+                    "Module Transaction"
+                ],
+                "summary": "Get balance for current user",
+                "operationId": "getBalanceForCurrentUser",
                 "security": [
                     {
                         "bearerAuth": []

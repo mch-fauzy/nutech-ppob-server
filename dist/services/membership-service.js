@@ -108,8 +108,8 @@ MembershipService.getByEmail = (req) => __awaiter(void 0, void 0, void 0, functi
     catch (error) {
         if (error instanceof failure_1.Failure)
             throw error;
-        winston_1.logger.error(`[MembershipService.getById] Error retrieving user by id: ${error}`);
-        throw failure_1.Failure.internalServer('Failed to retrieve user by id');
+        winston_1.logger.error(`[MembershipService.getById] Error retrieving user by email: ${error}`);
+        throw failure_1.Failure.internalServer('Failed to retrieve user by email');
     }
 });
 MembershipService.updateByEmail = (req) => __awaiter(void 0, void 0, void 0, function* () {
