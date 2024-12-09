@@ -19,6 +19,6 @@ const transactionDbField = {
 exports.transactionDbField = transactionDbField;
 var TransactionType;
 (function (TransactionType) {
-    TransactionType[TransactionType["TOPUP"] = 0] = "TOPUP";
-    TransactionType[TransactionType["PAYMENT"] = 1] = "PAYMENT";
+    TransactionType["TOPUP"] = "TOPUP";
+    TransactionType["PAYMENT"] = "PAYMENT";
 })(TransactionType || (exports.TransactionType = TransactionType = {}));

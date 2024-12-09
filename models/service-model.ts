@@ -13,9 +13,24 @@ const serviceDbField = {
     deletedBy: 'deleted_by'
 } as const;
 
+enum ServiceCode {
+    PAJAK = "PAJAK",
+    PLN = "PLN",
+    PDAM = "PDAM",
+    PULSA = "PULSA",
+    PGN = "PGN",
+    MUSIK = "MUSIK",
+    TV = "TV",
+    PAKET_DATA = "PAKET_DATA",
+    VOUCHER_GAME = "VOUCHER_GAME",
+    VOUCHER_MAKANAN = "VOUCHER_MAKANAN",
+    QURBAN = "QURBAN",
+    ZAKAT = "ZAKAT"
+}
+
 interface Service {
     id: number;
-    serviceCode: string;
+    serviceCode: ServiceCode;
     serviceName: string;
     serviceIcon: string;
     serviceTariff: number;
@@ -29,5 +44,6 @@ interface Service {
 
 export {
     serviceDbField,
+    ServiceCode,
     Service,
 };

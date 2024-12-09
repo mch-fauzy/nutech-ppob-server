@@ -7,3 +7,4 @@ const transaction_controller_1 = require("../../controllers/transaction-controll
 const transactionRouterV1 = (0, express_1.Router)();
 exports.transactionRouterV1 = transactionRouterV1;
 transactionRouterV1.get('/balance', auth_middleware_1.authenticateToken, transaction_controller_1.TransactionController.getBalanceForCurrentUser);
+transactionRouterV1.post('/topup', auth_middleware_1.authenticateToken, transaction_controller_1.TransactionController.topUpBalanceForCurrentUser);

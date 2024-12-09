@@ -16,6 +16,7 @@ const transaction_service_1 = require("../services/transaction-service");
 const transaction_dto_1 = require("../models/dto/transaction-dto");
 const constant_1 = require("../utils/constant");
 const response_1 = require("../utils/response");
+const transaction_model_1 = require("../models/transaction-model");
 class TransactionController {
 }
 exports.TransactionController = TransactionController;
@@ -30,6 +31,28 @@ TransactionController.getBalanceForCurrentUser = (req, res, next) => __awaiter(v
             email: validatedRequest.email
         });
         (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.OK, constant_1.CONSTANT.STATUS.SUCCESS, 'Get Balance For Current User Success', response);
+    }
+    catch (error) {
+        next(error);
+    }
+});
+TransactionController.topUpBalanceForCurrentUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const request = {
+            email: String(req.headers[constant_1.CONSTANT.HEADERS.EMAIL]),
+            transactionType: transaction_model_1.TransactionType.TOPUP,
+            topUpAmount: req.body.topUpAmount
+        };
+        const validatedRequest = yield transaction_dto_1.TransactionValidator.validateTopUpBalanceByEmailRequest(request);
+        yield transaction_service_1.TransactionService.topUpBalanceByEmail({
+            email: validatedRequest.email,
+            transactionType: validatedRequest.transactionType,
+            topUpAmount: validatedRequest.topUpAmount
+        });
+        const response = yield transaction_service_1.TransactionService.getBalanceByEmail({
+            email: validatedRequest.email
+        });
+        (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.OK, constant_1.CONSTANT.STATUS.SUCCESS, 'Top-Up Balance For Current User Success', response);
     }
     catch (error) {
         next(error);

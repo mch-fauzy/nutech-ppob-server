@@ -54,7 +54,7 @@ CREATE TABLE "nutech_banners" (
 CREATE TABLE "nutech_transactions" (
     "id" SERIAL NOT NULL,
     "user_id" UUID NOT NULL,
-    "service_id" INTEGER NOT NULL,
+    "service_id" INTEGER,
     "transaction_type" TEXT NOT NULL,
     "total_amount" DOUBLE PRECISION NOT NULL,
     "invoice_number" TEXT NOT NULL,
@@ -81,4 +81,4 @@ CREATE UNIQUE INDEX "nutech_banners_banner_name_key" ON "nutech_banners"("banner
 ALTER TABLE "nutech_transactions" ADD CONSTRAINT "nutech_transactions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "nutech_users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "nutech_transactions" ADD CONSTRAINT "nutech_transactions_service_id_fkey" FOREIGN KEY ("service_id") REFERENCES "nutech_services"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "nutech_transactions" ADD CONSTRAINT "nutech_transactions_service_id_fkey" FOREIGN KEY ("service_id") REFERENCES "nutech_services"("id") ON DELETE SET NULL ON UPDATE CASCADE;

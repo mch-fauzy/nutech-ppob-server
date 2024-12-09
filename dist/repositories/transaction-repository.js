@@ -21,12 +21,8 @@ exports.TransactionRepository = TransactionRepository;
 _a = TransactionRepository;
 TransactionRepository.create = (data) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const isTransactionAvailable = yield _a.existsById({ id: data.id });
-        if (isTransactionAvailable)
-            throw failure_1.Failure.conflict(`Transaction with this id already exists`);
         yield prisma_client_1.prismaClient.$executeRaw `
                 INSERT INTO nutech_transactions (
-                    id, 
                     user_id, 
                     service_id, 
                     transaction_type, 
@@ -37,7 +33,6 @@ TransactionRepository.create = (data) => __awaiter(void 0, void 0, void 0, funct
                     updated_at
                 )
                 VALUES (
-                    ${data.id},
                     ${data.userId}::uuid, 
                     ${data.serviceId}, 
                     ${data.transactionType}, 
@@ -119,21 +114,5 @@ TransactionRepository.findManyAndCountByFilter = (filter) => __awaiter(void 0, v
     catch (error) {
         winston_1.logger.error(`[TransactionRepository.findManyAndCountByFilter] Error finding and counting transactions by filter: ${error}`);
         throw failure_1.Failure.internalServer('Failed to find and count transactions by filter');
-    }
-});
-TransactionRepository.existsById = (primaryId) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const isTransactionAvailable = yield prisma_client_1.prismaClient.$queryRaw `
-                SELECT EXISTS (
-                    SELECT 1
-                    FROM nutech_transactions
-                    WHERE id = ${primaryId.id}
-                ) as exists
-            `;
-        return isTransactionAvailable[0].exists;
-    }
-    catch (error) {
-        winston_1.logger.error(`[TransactionRepository.existsById] Error determining transaction by id: ${error}`);
-        throw failure_1.Failure.internalServer('Failed to determine transaction by id');
     }
 });

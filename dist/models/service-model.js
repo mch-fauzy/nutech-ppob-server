@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.serviceDbField = void 0;
+exports.ServiceCode = exports.serviceDbField = void 0;
 // Read-only property
 const serviceDbField = {
     id: 'id',
@@ -16,3 +16,18 @@ const serviceDbField = {
     deletedBy: 'deleted_by'
 };
 exports.serviceDbField = serviceDbField;
+var ServiceCode;
+(function (ServiceCode) {
+    ServiceCode["PAJAK"] = "PAJAK";
+    ServiceCode["PLN"] = "PLN";
+    ServiceCode["PDAM"] = "PDAM";
+    ServiceCode["PULSA"] = "PULSA";
+    ServiceCode["PGN"] = "PGN";
+    ServiceCode["MUSIK"] = "MUSIK";
+    ServiceCode["TV"] = "TV";
+    ServiceCode["PAKET_DATA"] = "PAKET_DATA";
+    ServiceCode["VOUCHER_GAME"] = "VOUCHER_GAME";
+    ServiceCode["VOUCHER_MAKANAN"] = "VOUCHER_MAKANAN";
+    ServiceCode["QURBAN"] = "QURBAN";
+    ServiceCode["ZAKAT"] = "ZAKAT";
+})(ServiceCode || (exports.ServiceCode = ServiceCode = {}));

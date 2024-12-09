@@ -15,40 +15,56 @@ const winston_1 = require("../configs/winston");
 const user_repository_1 = require("../repositories/user-repository");
 const user_model_1 = require("../models/user-model");
 const failure_1 = require("../utils/failure");
+const transaction_repository_1 = require("../repositories/transaction-repository");
+const generate_invoice_number_1 = require("../utils/generate-invoice-number");
 class TransactionService {
 }
 exports.TransactionService = TransactionService;
 _a = TransactionService;
-// static register = async (req: MembershipRegisterRequest) => {
-//     try {
-//         const totalUsers = await UserRepository.countByFilter({
-//             filterFields: [{
-//                 field: userDbField.email,
-//                 operator: 'equals',
-//                 value: req.email
-//             }]
-//         });
-//         if (totalUsers !== BigInt(0)) throw Failure.conflict('User with this email already exists');
-//         const id = uuidv4();
-//         if (!validateUuid(id)) throw Failure.badRequest('Invalid UUID format');
-//         const hashedPassword = await hashPassword(req.password);
-//         await UserRepository.create({
-//             id,
-//             email: req.email,
-//             firstName: req.firstName,
-//             lastName: req.lastName,
-//             password: hashedPassword,
-//             createdBy: req.email,
-//             updatedBy: req.email,
-//             updatedAt: new Date()
-//         });
-//         return null;
-//     } catch (error) {
-//         if (error instanceof Failure) throw error;
-//         logger.error(`[AuthService.register] Error registering user: ${error}`);
-//         throw Failure.internalServer('Failed to register user');
-//     }
-// };
+TransactionService.topUpBalanceByEmail = (req) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const [users, totalUsers] = yield user_repository_1.UserRepository.findManyAndCountByFilter({
+            selectFields: [
+                user_model_1.userDbField.id,
+                user_model_1.userDbField.balance
+            ],
+            filterFields: [{
+                    field: user_model_1.userDbField.email,
+                    operator: 'equals',
+                    value: req.email
+                }]
+        });
+        if (totalUsers === BigInt(0))
+            throw failure_1.Failure.notFound('User with this email not found');
+        // Simulate top-up logic, ideally will have confirmation if user already pay for topup
+        const invoiceNumber = (0, generate_invoice_number_1.generateInvoiceNumber)();
+        const userPrimaryId = { id: users[0].id };
+        yield Promise.all([
+            transaction_repository_1.TransactionRepository.create({
+                userId: users[0].id,
+                serviceId: null,
+                transactionType: req.transactionType,
+                totalAmount: req.topUpAmount,
+                invoiceNumber: invoiceNumber,
+                createdBy: req.email,
+                updatedBy: req.email,
+                updatedAt: new Date()
+            }),
+            user_repository_1.UserRepository.updateById(userPrimaryId, {
+                balance: users[0].balance + req.topUpAmount,
+                updatedBy: req.email,
+                updatedAt: new Date()
+            })
+        ]);
+        return null;
+    }
+    catch (error) {
+        if (error instanceof failure_1.Failure)
+            throw error;
+        winston_1.logger.error(`[TransactionService.topUpBalanceByEmail] Error top-up balance by email: ${error}`);
+        throw failure_1.Failure.internalServer('Failed to top-up balance by email');
+    }
+});
 TransactionService.getBalanceByEmail = (req) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const [users, totalUsers] = yield user_repository_1.UserRepository.findManyAndCountByFilter({

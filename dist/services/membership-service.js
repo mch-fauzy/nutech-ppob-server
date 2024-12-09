@@ -52,7 +52,7 @@ MembershipService.register = (req) => __awaiter(void 0, void 0, void 0, function
     catch (error) {
         if (error instanceof failure_1.Failure)
             throw error;
-        winston_1.logger.error(`[AuthService.register] Error registering user: ${error}`);
+        winston_1.logger.error(`[MembershipService.register] Error registering user: ${error}`);
         throw failure_1.Failure.internalServer('Failed to register user');
     }
 });
@@ -82,7 +82,7 @@ MembershipService.login = (req) => __awaiter(void 0, void 0, void 0, function* (
     catch (error) {
         if (error instanceof failure_1.Failure)
             throw error;
-        winston_1.logger.error(`[AuthService.login] Error login user: ${error}`);
+        winston_1.logger.error(`[MembershipService.login] Error login user: ${error}`);
         throw failure_1.Failure.internalServer('Failed to login user');
     }
 });

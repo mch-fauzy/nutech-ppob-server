@@ -51,7 +51,7 @@ class MembershipService {
         } catch (error) {
             if (error instanceof Failure) throw error;
 
-            logger.error(`[AuthService.register] Error registering user: ${error}`);
+            logger.error(`[MembershipService.register] Error registering user: ${error}`);
             throw Failure.internalServer('Failed to register user');
         }
     };
@@ -82,7 +82,7 @@ class MembershipService {
         } catch (error) {
             if (error instanceof Failure) throw error;
 
-            logger.error(`[AuthService.login] Error login user: ${error}`);
+            logger.error(`[MembershipService.login] Error login user: ${error}`);
             throw Failure.internalServer('Failed to login user');
         }
     };

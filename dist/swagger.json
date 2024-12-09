@@ -270,6 +270,44 @@
                     }
                 }
             }
+        },
+        "/v1/topup": {
+            "post": {
+                "tags": [
+                    "Module Transaction"
+                ],
+                "summary": "Top-up balance for current user",
+                "operationId": "topUpBalanceForCurrentUser",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/transactionTopUpBalance"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -327,6 +365,15 @@
                     "image": {
                         "type": "string",
                         "format": "binary"
+                    }
+                }
+            },
+            "transactionTopUpBalance": {
+                "type": "object",
+                "properties": {
+                    "topUpAmount": {
+                        "type": "number",
+                        "example": 100000
                     }
                 }
             }

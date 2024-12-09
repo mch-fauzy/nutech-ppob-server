@@ -15,6 +15,8 @@ var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TransactionValidator = void 0;
 const joi_1 = __importDefault(require("joi"));
+const transaction_model_1 = require("../transaction-model");
+const service_model_1 = require("../service-model");
 class TransactionValidator {
 }
 exports.TransactionValidator = TransactionValidator;
@@ -24,4 +26,20 @@ TransactionValidator.getBalanceByEmailRequestValidator = joi_1.default.object({
 });
 TransactionValidator.validateGetBalanceByEmailRequest = (req) => __awaiter(void 0, void 0, void 0, function* () {
     return yield _a.getBalanceByEmailRequestValidator.validateAsync(req);
+});
+TransactionValidator.topUpBalanceByEmailRequestValidator = joi_1.default.object({
+    email: joi_1.default.string().email().required(),
+    transactionType: joi_1.default.string().valid(...Object.values(transaction_model_1.TransactionType)).required(),
+    topUpAmount: joi_1.default.number().min(0).required()
+});
+TransactionValidator.validateTopUpBalanceByEmailRequest = (req) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield _a.topUpBalanceByEmailRequestValidator.validateAsync(req);
+});
+TransactionValidator.paymentByEmailRequestValidator = joi_1.default.object({
+    email: joi_1.default.string().email().required(),
+    transactionType: joi_1.default.string().valid(transaction_model_1.TransactionType).required(),
+    serviceCode: joi_1.default.string().valid(service_model_1.ServiceCode).required()
+});
+TransactionValidator.validatePaymentByEmailRequest = (req) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield _a.paymentByEmailRequestValidator.validateAsync(req);
 });

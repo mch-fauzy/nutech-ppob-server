@@ -4,21 +4,16 @@ import { prismaClient } from '../configs/prisma-client';
 import { logger } from '../configs/winston';
 import {
     Transaction,
-    TransactionCreate,
-    TransactionPrimaryId
-} from '../models/transactions-model';
+    TransactionCreate
+} from '../models/transaction-model';
 import { Filter } from '../models/filter';
 import { Failure } from '../utils/failure';
 
 class TransactionRepository {
     static create = async (data: TransactionCreate) => {
         try {
-            const isTransactionAvailable = await this.existsById({ id: data.id });
-            if (isTransactionAvailable) throw Failure.conflict(`Transaction with this id already exists`);
-
             await prismaClient.$executeRaw`
                 INSERT INTO nutech_transactions (
-                    id, 
                     user_id, 
                     service_id, 
                     transaction_type, 
@@ -29,7 +24,6 @@ class TransactionRepository {
                     updated_at
                 )
                 VALUES (
-                    ${data.id},
                     ${data.userId}::uuid, 
                     ${data.serviceId}, 
                     ${data.transactionType}, 
@@ -129,23 +123,6 @@ class TransactionRepository {
         } catch (error) {
             logger.error(`[TransactionRepository.findManyAndCountByFilter] Error finding and counting transactions by filter: ${error}`);
             throw Failure.internalServer('Failed to find and count transactions by filter');
-        }
-    };
-
-    static existsById = async (primaryId: TransactionPrimaryId) => {
-        try {
-            const isTransactionAvailable = await prismaClient.$queryRaw<{ exists: boolean }[]>`
-                SELECT EXISTS (
-                    SELECT 1
-                    FROM nutech_transactions
-                    WHERE id = ${primaryId.id}
-                ) as exists
-            `;
-
-            return isTransactionAvailable[0].exists;
-        } catch (error) {
-            logger.error(`[TransactionRepository.existsById] Error determining transaction by id: ${error}`);
-            throw Failure.internalServer('Failed to determine transaction by id');
         }
     };
 }

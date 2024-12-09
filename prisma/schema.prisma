@@ -57,7 +57,7 @@ model nutech_banners {
 model nutech_transactions {
   id               Int       @db.Integer @id @default(autoincrement())
   user_id          String    @db.Uuid
-  service_id       Int       @db.Integer
+  service_id       Int?      @db.Integer
   transaction_type String    @db.Text
   total_amount     Float     @db.DoublePrecision
   invoice_number   String    @db.Text
@@ -69,5 +69,5 @@ model nutech_transactions {
   deleted_by       String?   @db.Text
 
   user             nutech_users  @relation(fields: [user_id], references: [id])
-  service          nutech_services @relation(fields: [service_id], references: [id])
+  service          nutech_services? @relation(fields: [service_id], references: [id])
 }
