@@ -24,6 +24,7 @@ import {
     uploadProfileImageToCloud,
     saveProfileImageToLocal
 } from '../middlewares/multer-middleware';
+import { Failure } from '../utils/failure';
 
 class MembershipController {
     static register = async (req: Request, res: Response, next: NextFunction) => {
@@ -115,9 +116,11 @@ class MembershipController {
         saveProfileImageToLocal,
         async (req: Request, res: Response, next: NextFunction) => {
             try {
+                if (!req.file) throw Failure.badRequest('File not found in the request');
+
                 const request: MembershipUpdateProfileImageByEmailRequest = {
                     email: String(req.headers[CONSTANT.HEADERS.EMAIL]),
-                    imageUrl: `${CONFIG.APP.IMAGE_STATIC_URL}/${req.file!.filename}`
+                    imageUrl: `${CONFIG.APP.IMAGE_STATIC_URL}/${req.file.filename}`
                 };
                 const validatedRequest = await MembershipValidator.validateUpdateProfileImageByEmailRequest(request);
 
@@ -143,11 +146,13 @@ class MembershipController {
         uploadProfileImageToCloud,
         async (req: Request, res: Response, next: NextFunction) => {
             try {
+                if (!req.file) throw Failure.badRequest('File not found in the request');
+
                 const request: MembershipUpdateProfileImageCloudinaryByEmailRequest = {
                     email: String(req.headers[CONSTANT.HEADERS.EMAIL]),
-                    fileName: req.file!.filename,
-                    buffer: req.file!.buffer,
-                    mimeType: req.file!.mimetype
+                    fileName: req.file.filename,
+                    buffer: req.file.buffer,
+                    mimeType: req.file.mimetype
                 };
                 const validatedRequest = await MembershipValidator.validateUpdateProfileImageCloudinaryByEmailRequest(request);
 

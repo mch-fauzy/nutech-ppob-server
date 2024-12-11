@@ -10,8 +10,6 @@ const failure_1 = require("../utils/failure");
 const constant_1 = require("../utils/constant");
 const path_1 = __importDefault(require("path"));
 const validateProfileImage = (req, file, cb) => {
-    if (!file)
-        return cb(failure_1.Failure.badRequest('No file uploaded'));
     // Rename profle image based on user email
     const email = String(req.headers[constant_1.CONSTANT.HEADERS.EMAIL]);
     file.filename = email.replace(constant_1.CONSTANT.REGEX.NOT_ALPHANUMERIC, '-');

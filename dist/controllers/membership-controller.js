@@ -18,6 +18,7 @@ const constant_1 = require("../utils/constant");
 const response_1 = require("../utils/response");
 const config_1 = require("../configs/config");
 const multer_middleware_1 = require("../middlewares/multer-middleware");
+const failure_1 = require("../utils/failure");
 class MembershipController {
 }
 exports.MembershipController = MembershipController;
@@ -102,6 +103,8 @@ MembershipController.updateProfileImageForCurrentUser = [
     multer_middleware_1.saveProfileImageToLocal,
     (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         try {
+            if (!req.file)
+                throw failure_1.Failure.badRequest('File not found in the request');
             const request = {
                 email: String(req.headers[constant_1.CONSTANT.HEADERS.EMAIL]),
                 imageUrl: `${config_1.CONFIG.APP.IMAGE_STATIC_URL}/${req.file.filename}`
@@ -127,6 +130,8 @@ MembershipController.updateProfileImageCloudinaryForCurrentUser = [
     multer_middleware_1.uploadProfileImageToCloud,
     (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         try {
+            if (!req.file)
+                throw failure_1.Failure.badRequest('File not found in the request');
             const request = {
                 email: String(req.headers[constant_1.CONSTANT.HEADERS.EMAIL]),
                 fileName: req.file.filename,

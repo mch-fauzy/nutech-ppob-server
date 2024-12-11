@@ -7,8 +7,6 @@ import { CONSTANT } from '../utils/constant';
 import path from 'path';
 
 const validateProfileImage = (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
-    if (!file) return cb(Failure.badRequest('No file uploaded'));
-
     // Rename profle image based on user email
     const email = String(req.headers[CONSTANT.HEADERS.EMAIL]);
     file.filename = email.replace(CONSTANT.REGEX.NOT_ALPHANUMERIC, '-');
