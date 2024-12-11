@@ -22,7 +22,7 @@ _a = InformationController;
 InformationController.getBannerList = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const response = yield information_service_1.InformationService.getBannerList();
-        (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.OK, constant_1.CONSTANT.STATUS.SUCCESS, 'Get Banner List Success', response);
+        (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.OK, constant_1.CONSTANT.INTERNAL_STATUS_CODES.SUCCESS, 'Get banner list success', response);
     }
     catch (error) {
         next(error);
@@ -31,7 +31,7 @@ InformationController.getBannerList = (req, res, next) => __awaiter(void 0, void
 InformationController.getServiceList = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const response = yield information_service_1.InformationService.getServiceList();
-        (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.OK, constant_1.CONSTANT.STATUS.SUCCESS, 'Get Service List Success', response);
+        (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.OK, constant_1.CONSTANT.INTERNAL_STATUS_CODES.SUCCESS, 'Get service list success', response);
     }
     catch (error) {
         next(error);

@@ -10,6 +10,7 @@ membershipRouterV1.post('/login', MembershipController.login);
 
 membershipRouterV1.get('/profile', authenticateToken, MembershipController.getProfileForCurrentUser);
 membershipRouterV1.put('/profile/update', authenticateToken, MembershipController.updateProfileForCurrentUser);
-membershipRouterV1.put('/profile/image', authenticateToken, MembershipController.updateProfileImageForCurrentUser);
+// membershipRouterV1.put('/profile/image', authenticateToken, MembershipController.updateProfileImageForCurrentUser);
+membershipRouterV1.put('/profile/image', authenticateToken, MembershipController.updateProfileImageCloudinaryForCurrentUser);
 
 export { membershipRouterV1 };

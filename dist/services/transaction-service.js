@@ -43,6 +43,7 @@ TransactionService.topUpBalanceByEmail = (req) => __awaiter(void 0, void 0, void
         // Simulate top-up logic, ideally will have confirmation if user already pay for topup
         const invoiceNumber = (0, generate_invoice_number_1.generateInvoiceNumber)();
         const userPrimaryId = { id: user.id };
+        // TODO: If either on fail, then both fail
         yield Promise.all([
             transaction_repository_1.TransactionRepository.create({
                 userId: user.id,
@@ -65,7 +66,7 @@ TransactionService.topUpBalanceByEmail = (req) => __awaiter(void 0, void 0, void
     catch (error) {
         if (error instanceof failure_1.Failure)
             throw error;
-        winston_1.logger.error(`[TransactionService.topUpBalanceByEmail] Error top-up balance by email: ${error}`);
+        winston_1.logger.error(`[TransactionService.topUpBalanceByEmail] Error top-up balance by email: ${JSON.stringify(error)}`);
         throw failure_1.Failure.internalServer('Failed to top-up balance by email');
     }
 });
@@ -104,6 +105,7 @@ TransactionService.paymentByEmail = (req) => __awaiter(void 0, void 0, void 0, f
             throw failure_1.Failure.badRequest('Insufficient balance to make the payment');
         const invoiceNumber = (0, generate_invoice_number_1.generateInvoiceNumber)();
         const userPrimaryId = { id: user.id };
+        // TODO: If either on fail, then both fail
         yield Promise.all([
             transaction_repository_1.TransactionRepository.create({
                 userId: user.id,
@@ -126,7 +128,7 @@ TransactionService.paymentByEmail = (req) => __awaiter(void 0, void 0, void 0, f
     catch (error) {
         if (error instanceof failure_1.Failure)
             throw error;
-        winston_1.logger.error(`[TransactionService.paymentByEmail] Error processing payment by email: ${error}`);
+        winston_1.logger.error(`[TransactionService.paymentByEmail] Error processing payment by email: ${JSON.stringify(error)}`);
         throw failure_1.Failure.internalServer('Failed to process payment by email');
     }
 });
@@ -150,7 +152,7 @@ TransactionService.getBalanceByEmail = (req) => __awaiter(void 0, void 0, void 0
     catch (error) {
         if (error instanceof failure_1.Failure)
             throw error;
-        winston_1.logger.error(`[TransactionService.getBalanceByEmail] Error retrieving balance by email: ${error}`);
+        winston_1.logger.error(`[TransactionService.getBalanceByEmail] Error retrieving balance by email: ${JSON.stringify(error)}`);
         throw failure_1.Failure.internalServer('Failed to retrieve user by email');
     }
 });
@@ -217,7 +219,7 @@ TransactionService.getLatestByEmail = (req) => __awaiter(void 0, void 0, void 0,
     catch (error) {
         if (error instanceof failure_1.Failure)
             throw error;
-        winston_1.logger.error(`[TransactionService.getLatestByEmail] Error retrieving latest transaction by email: ${error}`);
+        winston_1.logger.error(`[TransactionService.getLatestByEmail] Error retrieving latest transaction by email: ${JSON.stringify(error)}`);
         throw failure_1.Failure.internalServer('Failed to retrieve latest transaction by email');
     }
 });
@@ -288,7 +290,7 @@ TransactionService.getListByEmail = (req) => __awaiter(void 0, void 0, void 0, f
     catch (error) {
         if (error instanceof failure_1.Failure)
             throw error;
-        winston_1.logger.error(`[TransactionService.getListByEmail] Error retrieving transactions by email: ${error}`);
+        winston_1.logger.error(`[TransactionService.getListByEmail] Error retrieving transactions by email: ${JSON.stringify(error)}`);
         throw failure_1.Failure.internalServer('Failed to retrieve transactions by email');
     }
 });

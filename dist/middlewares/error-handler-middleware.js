@@ -15,12 +15,12 @@ const errorHandler = (error, req, res, next) => {
     }
     // Handle validation errors for Joi validator
     if (error instanceof Error && error.name === 'ValidationError') {
-        (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.BAD_REQUEST, constant_1.CONSTANT.STATUS.BAD_REQUEST, error.message, null);
+        (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.BAD_REQUEST, constant_1.CONSTANT.INTERNAL_STATUS_CODES.BAD_REQUEST, error.message, null);
         return;
     }
     // Handle unexpected errors
-    winston_1.logger.error(`[errorHandler] Unexpected error: ${error}`);
-    (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR, constant_1.CONSTANT.STATUS.INTERNAL_SERVER_ERROR, 'Internal server error', null);
+    winston_1.logger.error(`[errorHandler] Unexpected error: ${JSON.stringify(error)}`);
+    (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR, constant_1.CONSTANT.INTERNAL_STATUS_CODES.SERVER_ERROR, 'Something went wrong', null);
     next();
 };
 exports.errorHandler = errorHandler;

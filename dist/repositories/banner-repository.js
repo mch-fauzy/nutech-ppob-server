@@ -94,7 +94,7 @@ BannerRepository.findManyAndCountByFilter = (filter) => __awaiter(void 0, void 0
         return [mappedBanners, totalBanners[0].count];
     }
     catch (error) {
-        winston_1.logger.error(`[BannerRepository.findManyAndCountByFilter] Error finding and counting banners by filter: ${error}`);
+        winston_1.logger.error(`[BannerRepository.findManyAndCountByFilter] Error finding and counting banners by filter: ${JSON.stringify(error)}`);
         throw failure_1.Failure.internalServer('Failed to find and count banners by filter');
     }
 });

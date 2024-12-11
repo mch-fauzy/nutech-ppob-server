@@ -39,7 +39,7 @@ const seed = async () => {
 
         logger.info('Seeding complete');
     } catch (error) {
-        logger.error(`[seed] Error seeding data: ${error}`);
+        logger.error(`[seed] Error seeding data: ${JSON.stringify(error)}`);
     }
 
 }

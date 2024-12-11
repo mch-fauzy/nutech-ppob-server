@@ -16,7 +16,7 @@ class InformationController {
         try {
             const response = await InformationService.getBannerList();
 
-            responseWithDetails(res, StatusCodes.OK, CONSTANT.STATUS.SUCCESS, 'Get Banner List Success', response);
+            responseWithDetails(res, StatusCodes.OK, CONSTANT.INTERNAL_STATUS_CODES.SUCCESS, 'Get banner list success', response);
         } catch (error) {
             next(error);
         }
@@ -26,7 +26,7 @@ class InformationController {
         try {
             const response = await InformationService.getServiceList();
 
-            responseWithDetails(res, StatusCodes.OK, CONSTANT.STATUS.SUCCESS, 'Get Service List Success', response);
+            responseWithDetails(res, StatusCodes.OK, CONSTANT.INTERNAL_STATUS_CODES.SUCCESS, 'Get service list success', response);
         } catch (error) {
             next(error);
         }

@@ -16,13 +16,13 @@ const errorHandler = (error: Failure | Error, req: Request, res: Response, next:
 
     // Handle validation errors for Joi validator
     if (error instanceof Error && error.name === 'ValidationError') {
-        responseWithDetails(res, StatusCodes.BAD_REQUEST, CONSTANT.STATUS.BAD_REQUEST, error.message, null);
+        responseWithDetails(res, StatusCodes.BAD_REQUEST, CONSTANT.INTERNAL_STATUS_CODES.BAD_REQUEST, error.message, null);
         return;
     }
 
     // Handle unexpected errors
-    logger.error(`[errorHandler] Unexpected error: ${error}`);
-    responseWithDetails(res, StatusCodes.INTERNAL_SERVER_ERROR, CONSTANT.STATUS.INTERNAL_SERVER_ERROR, 'Internal server error', null);
+    logger.error(`[errorHandler] Unexpected error: ${JSON.stringify(error)}`);
+    responseWithDetails(res, StatusCodes.INTERNAL_SERVER_ERROR, CONSTANT.INTERNAL_STATUS_CODES.SERVER_ERROR, 'Something went wrong', null);
     next();
 };
 

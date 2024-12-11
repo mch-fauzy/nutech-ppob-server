@@ -43,5 +43,5 @@ const swaggerRoute = {
 };
 if (config_1.CONFIG.APP.DOCS === "enabled") {
     router.use(swaggerRoute.path, swaggerRoute.route, swaggerRoute.docs);
-    winston_1.logger.info(`Swagger documentation enabled on ${swaggerRoute.path}`);
+    winston_1.logger.info(`Swagger documentation enabled: ${config_1.CONFIG.APP.BASE_URL}${swaggerRoute.path}`);
 }

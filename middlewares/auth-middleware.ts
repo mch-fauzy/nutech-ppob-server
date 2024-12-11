@@ -1,31 +1,27 @@
 import { Request, Response, NextFunction } from 'express';
 import { verify } from 'jsonwebtoken';
-import { StatusCodes } from 'http-status-codes';
 
 import { MembershipTokenPayload } from '../models/dto/membership-dto';
 import { CONFIG } from '../configs/config';
 import { CONSTANT } from '../utils/constant';
-import { responseWithDetails } from '../utils/response';
+import { Failure } from '../utils/failure';
 
 const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
     const token = authHeader?.split(' ')[1]; // Check if authHeader is exist (using optional chaining ?.) and get the token only (Bearer <Token>)
     if (!token) {
-        responseWithDetails(res, StatusCodes.UNAUTHORIZED, CONSTANT.STATUS.UNAUTHORIZED, 'Missing token', null);
-        return;
+        throw Failure.unauthorized('Missing token');
     }
 
-    verify(token, CONFIG.APP.JWT_ACCESS_KEY!, (error, decodedToken) => {
+    verify(token, CONFIG.APP.JWT_ACCESS_SECRET!, (error, decodedToken) => {
         if (error || !decodedToken) {
-            responseWithDetails(res, StatusCodes.UNAUTHORIZED, CONSTANT.STATUS.UNAUTHORIZED, 'Token is invalid or expired', null);
-            return;
+            throw Failure.unauthorized('Token is invalid or expired');
         }
 
         const decodedTokenPayload = decodedToken as MembershipTokenPayload;
 
         if (!decodedTokenPayload.email) {
-            responseWithDetails(res, StatusCodes.UNAUTHORIZED, CONSTANT.STATUS.UNAUTHORIZED, 'Incomplete token payload', null);
-            return;
+            throw Failure.unauthorized('Incomplete token payload');
         }
 
         // Set decoded token details to custom headers

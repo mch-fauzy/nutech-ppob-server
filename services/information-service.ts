@@ -19,7 +19,7 @@ class InformationService {
 
             return banners;
         } catch (error) {
-            logger.error(`[InformationService.getBannerList] Error retrieving banners: ${error}`);
+            logger.error(`[InformationService.getBannerList] Error retrieving banners: ${JSON.stringify(error)}`);
             throw Failure.internalServer('Failed to retrieve banners');
         }
     };
@@ -37,7 +37,7 @@ class InformationService {
 
             return services;
         } catch (error) {
-            logger.error(`[InformationService.getServiceList] Error retrieving services: ${error}`);
+            logger.error(`[InformationService.getServiceList] Error retrieving services: ${JSON.stringify(error)}`);
             throw Failure.internalServer('Failed to retrieve services');
         }
     };

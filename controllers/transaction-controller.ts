@@ -29,7 +29,7 @@ class TransactionController {
                 email: validatedRequest.email
             });
 
-            responseWithDetails(res, StatusCodes.OK, CONSTANT.STATUS.SUCCESS, 'Get Balance Success', response);
+            responseWithDetails(res, StatusCodes.OK, CONSTANT.INTERNAL_STATUS_CODES.SUCCESS, 'Get balance success', response);
         } catch (error) {
             next(error);
         }
@@ -54,7 +54,7 @@ class TransactionController {
                 email: validatedRequest.email
             });
 
-            responseWithDetails(res, StatusCodes.OK, CONSTANT.STATUS.SUCCESS, 'Top-Up Balance Success', response);
+            responseWithDetails(res, StatusCodes.OK, CONSTANT.INTERNAL_STATUS_CODES.SUCCESS, 'Top-Up balance success', response);
         } catch (error) {
             next(error);
         }
@@ -79,7 +79,7 @@ class TransactionController {
                 email: validatedRequest.email
             });
 
-            responseWithDetails(res, StatusCodes.OK, CONSTANT.STATUS.SUCCESS, 'Payment Success', response);
+            responseWithDetails(res, StatusCodes.OK, CONSTANT.INTERNAL_STATUS_CODES.SUCCESS, 'Payment success', response);
         } catch (error) {
             next(error);
         }
@@ -100,7 +100,7 @@ class TransactionController {
                 pageSize: validatedRequest.pageSize
             });
 
-            responseWithDetails(res, StatusCodes.OK, CONSTANT.STATUS.SUCCESS, 'Get Transaction List Success', response);
+            responseWithDetails(res, StatusCodes.OK, CONSTANT.INTERNAL_STATUS_CODES.SUCCESS, 'Get transaction list success', response);
         } catch (error) {
             next(error);
         }

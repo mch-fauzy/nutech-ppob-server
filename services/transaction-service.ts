@@ -40,6 +40,7 @@ class TransactionService {
             // Simulate top-up logic, ideally will have confirmation if user already pay for topup
             const invoiceNumber = generateInvoiceNumber();
             const userPrimaryId: UserPrimaryId = { id: user.id };
+            // TODO: If either on fail, then both fail
             await Promise.all([
                 TransactionRepository.create({
                     userId: user.id,
@@ -62,7 +63,7 @@ class TransactionService {
         } catch (error) {
             if (error instanceof Failure) throw error;
 
-            logger.error(`[TransactionService.topUpBalanceByEmail] Error top-up balance by email: ${error}`);
+            logger.error(`[TransactionService.topUpBalanceByEmail] Error top-up balance by email: ${JSON.stringify(error)}`);
             throw Failure.internalServer('Failed to top-up balance by email');
         }
     };
@@ -102,6 +103,7 @@ class TransactionService {
 
             const invoiceNumber = generateInvoiceNumber();
             const userPrimaryId: UserPrimaryId = { id: user.id };
+            // TODO: If either on fail, then both fail
             await Promise.all([
                 TransactionRepository.create({
                     userId: user.id,
@@ -124,7 +126,7 @@ class TransactionService {
         } catch (error) {
             if (error instanceof Failure) throw error;
 
-            logger.error(`[TransactionService.paymentByEmail] Error processing payment by email: ${error}`);
+            logger.error(`[TransactionService.paymentByEmail] Error processing payment by email: ${JSON.stringify(error)}`);
             throw Failure.internalServer('Failed to process payment by email');
         }
     };
@@ -148,7 +150,7 @@ class TransactionService {
         } catch (error) {
             if (error instanceof Failure) throw error;
 
-            logger.error(`[TransactionService.getBalanceByEmail] Error retrieving balance by email: ${error}`);
+            logger.error(`[TransactionService.getBalanceByEmail] Error retrieving balance by email: ${JSON.stringify(error)}`);
             throw Failure.internalServer('Failed to retrieve user by email');
         }
     };
@@ -216,7 +218,7 @@ class TransactionService {
         } catch (error) {
             if (error instanceof Failure) throw error;
 
-            logger.error(`[TransactionService.getLatestByEmail] Error retrieving latest transaction by email: ${error}`);
+            logger.error(`[TransactionService.getLatestByEmail] Error retrieving latest transaction by email: ${JSON.stringify(error)}`);
             throw Failure.internalServer('Failed to retrieve latest transaction by email');
         }
     };
@@ -289,7 +291,7 @@ class TransactionService {
         } catch (error) {
             if (error instanceof Failure) throw error;
 
-            logger.error(`[TransactionService.getListByEmail] Error retrieving transactions by email: ${error}`);
+            logger.error(`[TransactionService.getListByEmail] Error retrieving transactions by email: ${JSON.stringify(error)}`);
             throw Failure.internalServer('Failed to retrieve transactions by email');
         }
     };

@@ -95,7 +95,7 @@ ServiceRepository.findManyAndCountByFilter = (filter) => __awaiter(void 0, void 
         return [mappedServices, totalServices[0].count];
     }
     catch (error) {
-        winston_1.logger.error(`[ServiceRepository.findManyAndCountByFilter] Error finding and counting services by filter: ${error}`);
+        winston_1.logger.error(`[ServiceRepository.findManyAndCountByFilter] Error finding and counting services by filter: ${JSON.stringify(error)}`);
         throw failure_1.Failure.internalServer('Failed to find and count services by filter');
     }
 });

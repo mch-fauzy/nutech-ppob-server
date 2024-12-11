@@ -46,7 +46,7 @@ const seed = () => __awaiter(void 0, void 0, void 0, function* () {
         winston_1.logger.info('Seeding complete');
     }
     catch (error) {
-        winston_1.logger.error(`[seed] Error seeding data: ${error}`);
+        winston_1.logger.error(`[seed] Error seeding data: ${JSON.stringify(error)}`);
     }
 });
 seed();

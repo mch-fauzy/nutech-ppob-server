@@ -17,8 +17,7 @@ const membership_dto_1 = require("../models/dto/membership-dto");
 const constant_1 = require("../utils/constant");
 const response_1 = require("../utils/response");
 const config_1 = require("../configs/config");
-const multer_img_middleware_1 = require("../middlewares/multer-img-middleware");
-const failure_1 = require("../utils/failure");
+const multer_middleware_1 = require("../middlewares/multer-middleware");
 class MembershipController {
 }
 exports.MembershipController = MembershipController;
@@ -38,7 +37,7 @@ MembershipController.register = (req, res, next) => __awaiter(void 0, void 0, vo
             lastName: validatedRequest.lastName,
             password: validatedRequest.password
         });
-        (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.OK, constant_1.CONSTANT.STATUS.SUCCESS, 'Register Success', response);
+        (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.OK, constant_1.CONSTANT.INTERNAL_STATUS_CODES.SUCCESS, 'Register success', response);
     }
     catch (error) {
         next(error);
@@ -55,7 +54,7 @@ MembershipController.login = (req, res, next) => __awaiter(void 0, void 0, void 
             email: validatedRequest.email,
             password: validatedRequest.password
         });
-        (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.OK, constant_1.CONSTANT.STATUS.SUCCESS, 'Login Success', response);
+        (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.OK, constant_1.CONSTANT.INTERNAL_STATUS_CODES.SUCCESS, 'Login success', response);
     }
     catch (error) {
         next(error);
@@ -70,7 +69,7 @@ MembershipController.getProfileForCurrentUser = (req, res, next) => __awaiter(vo
         const response = yield membership_service_1.MembershipService.getByEmail({
             email: validatedRequest.email
         });
-        (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.OK, constant_1.CONSTANT.STATUS.SUCCESS, 'Get Profile For Current User Success', response);
+        (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.OK, constant_1.CONSTANT.INTERNAL_STATUS_CODES.SUCCESS, 'Get profile success', response);
     }
     catch (error) {
         next(error);
@@ -92,7 +91,7 @@ MembershipController.updateProfileForCurrentUser = (req, res, next) => __awaiter
         const response = yield membership_service_1.MembershipService.getByEmail({
             email: validatedRequest.email
         });
-        (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.OK, constant_1.CONSTANT.STATUS.SUCCESS, 'Update Profile For Current User Success', response);
+        (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.OK, constant_1.CONSTANT.INTERNAL_STATUS_CODES.SUCCESS, 'Update profile success', response);
     }
     catch (error) {
         next(error);
@@ -100,24 +99,53 @@ MembershipController.updateProfileForCurrentUser = (req, res, next) => __awaiter
 });
 // TODO: If either on fail, then both fail
 MembershipController.updateProfileImageForCurrentUser = [
-    multer_img_middleware_1.uploadImageToLocal,
+    multer_middleware_1.saveProfileImageToLocal,
     (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            if (!req.file)
-                throw failure_1.Failure.badRequest('No file uploaded');
             const request = {
                 email: String(req.headers[constant_1.CONSTANT.HEADERS.EMAIL]),
                 imageUrl: `${config_1.CONFIG.APP.IMAGE_STATIC_URL}/${req.file.filename}`
             };
             const validatedRequest = yield membership_dto_1.MembershipValidator.validateUpdateProfileImageByEmailRequest(request);
+            // Update profile image
             yield membership_service_1.MembershipService.updateProfileImageByEmail({
                 email: validatedRequest.email,
                 imageUrl: validatedRequest.imageUrl
             });
+            // Get profile
             const response = yield membership_service_1.MembershipService.getByEmail({
                 email: validatedRequest.email
             });
-            (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.OK, constant_1.CONSTANT.STATUS.SUCCESS, 'Update Profile Image For Current User Success', response);
+            (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.OK, constant_1.CONSTANT.INTERNAL_STATUS_CODES.SUCCESS, 'Update profile image success', response);
+        }
+        catch (error) {
+            next(error);
+        }
+    })
+];
+MembershipController.updateProfileImageCloudinaryForCurrentUser = [
+    multer_middleware_1.uploadProfileImageToCloud,
+    (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const request = {
+                email: String(req.headers[constant_1.CONSTANT.HEADERS.EMAIL]),
+                fileName: req.file.filename,
+                buffer: req.file.buffer,
+                mimeType: req.file.mimetype
+            };
+            const validatedRequest = yield membership_dto_1.MembershipValidator.validateUpdateProfileImageCloudinaryByEmailRequest(request);
+            // Update profile image and upload the image to cloudinary
+            yield membership_service_1.MembershipService.updateProfileImageCloudinaryByEmail({
+                email: validatedRequest.email,
+                fileName: validatedRequest.fileName,
+                buffer: validatedRequest.buffer,
+                mimeType: validatedRequest.mimeType
+            });
+            // Get profile
+            const response = yield membership_service_1.MembershipService.getByEmail({
+                email: validatedRequest.email
+            });
+            (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.OK, constant_1.CONSTANT.INTERNAL_STATUS_CODES.SUCCESS, 'Update profile image success', response);
         }
         catch (error) {
             next(error);

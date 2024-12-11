@@ -46,7 +46,7 @@ class UserRepository {
         } catch (error) {
             if (error instanceof Failure) throw error;
 
-            logger.error(`[UserRepository.create] Error creating user: ${error}`);
+            logger.error(`[UserRepository.create] Error creating user: ${JSON.stringify(error)}`);
             throw Failure.internalServer('Failed to create user');
         }
 
@@ -73,7 +73,7 @@ class UserRepository {
         } catch (error) {
             if (error instanceof Failure) throw error;
 
-            logger.error(`[UserRepository.updateById] Error updating user by id: ${error}`);
+            logger.error(`[UserRepository.updateById] Error updating user by id: ${JSON.stringify(error)}`);
             throw Failure.internalServer('Failed to update user by id');
         }
     };
@@ -174,7 +174,7 @@ class UserRepository {
 
             return [mappedUsers, totalUsers[0].count];
         } catch (error) {
-            logger.error(`[UserRepository.findManyAndCountByFilter] Error finding and counting users by filter: ${error}`);
+            logger.error(`[UserRepository.findManyAndCountByFilter] Error finding and counting users by filter: ${JSON.stringify(error)}`);
             throw Failure.internalServer('Failed to find and count users by filter');
         }
     };
@@ -212,7 +212,7 @@ class UserRepository {
 
             return totalUsers[0].count;
         } catch (error) {
-            logger.error(`[UserRepository.countByFilter] Error counting users by filter: ${error}`);
+            logger.error(`[UserRepository.countByFilter] Error counting users by filter: ${JSON.stringify(error)}`);
             throw Failure.internalServer('Failed to count users by filter');
         }
     };
@@ -229,7 +229,7 @@ class UserRepository {
 
             return isUserAvailable[0].exists;
         } catch (error) {
-            logger.error(`[UserRepository.existsById] Error determining user by id: ${error}`);
+            logger.error(`[UserRepository.existsById] Error determining user by id: ${JSON.stringify(error)}`);
             throw Failure.internalServer('Failed to determine user by id');
         }
     };

@@ -14,7 +14,7 @@ const app = express();
 // Declaration of app.use must be ordered, dont random placement
 app.use(cors());
 app.use(json());
-app.use(express.static(CONFIG.APP.STATIC!));
+app.use(express.static(CONFIG.APP.STATIC_DIRECTORY!));
 
 app.use('/', router);
 app.use(errorHandler);
@@ -26,12 +26,12 @@ Promise.all([initDbConnection()])
         const server = createServer(app);
 
         server.listen(PORT, () => {
-            logger.info(`Server running on ${CONFIG.APP.URL}:${PORT}`);
+            logger.info(`Server running on port: ${PORT}`);
         });
 
         // Handle startup errors
         server.on('error', (error) => {
-            logger.error(`[server] An error occurred while starting the server: ${error}`);
+            logger.error(`[server] An error occurred while starting the server: ${JSON.stringify(error)}`);
             process.exit(1);
         });
     });

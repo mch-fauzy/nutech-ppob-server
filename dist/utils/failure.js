@@ -17,20 +17,20 @@ class Failure extends Error {
 }
 exports.Failure = Failure;
 Failure.notFound = (message) => {
-    return new Failure(message, http_status_codes_1.StatusCodes.NOT_FOUND, constant_1.CONSTANT.STATUS.NOT_FOUND);
+    return new Failure(message, http_status_codes_1.StatusCodes.NOT_FOUND, constant_1.CONSTANT.INTERNAL_STATUS_CODES.NOT_FOUND);
 };
 Failure.unauthorized = (message) => {
-    return new Failure(message, http_status_codes_1.StatusCodes.UNAUTHORIZED, constant_1.CONSTANT.STATUS.UNAUTHORIZED);
+    return new Failure(message, http_status_codes_1.StatusCodes.UNAUTHORIZED, constant_1.CONSTANT.INTERNAL_STATUS_CODES.UNAUTHORIZED);
 };
 Failure.invalidCredentials = (message) => {
-    return new Failure(message, http_status_codes_1.StatusCodes.UNAUTHORIZED, constant_1.CONSTANT.STATUS.INVALID_CREDENTIALS);
+    return new Failure(message, http_status_codes_1.StatusCodes.UNAUTHORIZED, constant_1.CONSTANT.INTERNAL_STATUS_CODES.INVALID_CREDENTIALS);
 };
 Failure.internalServer = (message) => {
-    return new Failure(message, http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR, constant_1.CONSTANT.STATUS.INTERNAL_SERVER_ERROR);
+    return new Failure(message, http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR, constant_1.CONSTANT.INTERNAL_STATUS_CODES.SERVER_ERROR);
 };
 Failure.badRequest = (message) => {
-    return new Failure(message, http_status_codes_1.StatusCodes.BAD_REQUEST, constant_1.CONSTANT.STATUS.BAD_REQUEST);
+    return new Failure(message, http_status_codes_1.StatusCodes.BAD_REQUEST, constant_1.CONSTANT.INTERNAL_STATUS_CODES.BAD_REQUEST);
 };
 Failure.conflict = (message) => {
-    return new Failure(message, http_status_codes_1.StatusCodes.CONFLICT, constant_1.CONSTANT.STATUS.CONFLICT);
+    return new Failure(message, http_status_codes_1.StatusCodes.CONFLICT, constant_1.CONSTANT.INTERNAL_STATUS_CODES.CONFLICT);
 };
