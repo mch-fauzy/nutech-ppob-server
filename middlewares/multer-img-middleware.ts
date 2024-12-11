@@ -18,7 +18,7 @@ const imageValidation = (req: Request, file: Express.Multer.File, cb: FileFilter
 /**
  * Multer configuration for local storage
  */
-const uploadImageToLocal = multer({
+const saveImageToLocal = multer({
     storage: multer.diskStorage({
         destination: (req, file, cb) => {
             cb(null, CONFIG.APP.IMAGE_STORAGE_DIRECTORY!); // Directory where files are stored
@@ -48,6 +48,6 @@ const uploadImageToCloud = multer({
 }).single(CONSTANT.MULTER.IMAGE_FIELD_NAME);
 
 export {
-    uploadImageToLocal,
+    saveImageToLocal,
     uploadImageToCloud
 };
