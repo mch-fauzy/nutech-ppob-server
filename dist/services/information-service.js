@@ -33,7 +33,7 @@ InformationService.getBannerList = () => __awaiter(void 0, void 0, void 0, funct
         return banners;
     }
     catch (error) {
-        winston_1.logger.error(`[InformationService.getBannerList] Error retrieving banners: ${error}`);
+        winston_1.logger.error(`[InformationService.getBannerList] Error retrieving banners: ${JSON.stringify(error)}`);
         throw failure_1.Failure.internalServer('Failed to retrieve banners');
     }
 });
@@ -50,7 +50,7 @@ InformationService.getServiceList = () => __awaiter(void 0, void 0, void 0, func
         return services;
     }
     catch (error) {
-        winston_1.logger.error(`[InformationService.getServiceList] Error retrieving services: ${error}`);
+        winston_1.logger.error(`[InformationService.getServiceList] Error retrieving services: ${JSON.stringify(error)}`);
         throw failure_1.Failure.internalServer('Failed to retrieve services');
     }
 });

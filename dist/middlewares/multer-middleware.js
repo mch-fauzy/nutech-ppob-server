@@ -33,7 +33,7 @@ const saveProfileImageToLocal = (0, multer_1.default)({
             cb(null, config_1.CONFIG.APP.IMAGE_STORAGE_DIRECTORY); // Directory where files are stored
         },
         filename: (req, file, cb) => {
-            cb(null, `${file.filename}${path_1.default.extname(file.originalname)}`);
+            cb(null, `${file.filename}${path_1.default.extname(file.originalname)}`); // Local image name with extension
         },
     })
 }).single(constant_1.CONSTANT.MULTER.IMAGE_FIELD_NAME);

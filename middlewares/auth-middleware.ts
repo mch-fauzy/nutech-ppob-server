@@ -1,11 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { verify } from 'jsonwebtoken';
-import { StatusCodes } from 'http-status-codes';
 
 import { MembershipTokenPayload } from '../models/dto/membership-dto';
 import { CONFIG } from '../configs/config';
 import { CONSTANT } from '../utils/constant';
-import { responseWithDetails } from '../utils/response';
 import { Failure } from '../utils/failure';
 
 const authenticateToken = (req: Request, res: Response, next: NextFunction) => {

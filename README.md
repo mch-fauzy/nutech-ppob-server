@@ -12,6 +12,7 @@ Live demo [_here_](https://nutech-ppob-server.vercel.app/)
 ## Technologies Used
 - NodeJS - version 20.11.1
 - Postgresql - version 14.13.0
+- Cloudinary for Cloud Storage
 
 ## Features
 - Users Management

@@ -19,27 +19,27 @@ class Failure extends Error {
     }
 
     static notFound = (message: string) => {
-        return new Failure(message, StatusCodes.NOT_FOUND, CONSTANT.STATUS.NOT_FOUND)
+        return new Failure(message, StatusCodes.NOT_FOUND, CONSTANT.INTERNAL_STATUS_CODES.NOT_FOUND)
     };
 
     static unauthorized = (message: string) => {
-        return new Failure(message, StatusCodes.UNAUTHORIZED, CONSTANT.STATUS.UNAUTHORIZED)
+        return new Failure(message, StatusCodes.UNAUTHORIZED, CONSTANT.INTERNAL_STATUS_CODES.UNAUTHORIZED)
     };
 
     static invalidCredentials = (message: string) => {
-        return new Failure(message, StatusCodes.UNAUTHORIZED, CONSTANT.STATUS.INVALID_CREDENTIALS)
+        return new Failure(message, StatusCodes.UNAUTHORIZED, CONSTANT.INTERNAL_STATUS_CODES.INVALID_CREDENTIALS)
     };
 
     static internalServer = (message: string) => {
-        return new Failure(message, StatusCodes.INTERNAL_SERVER_ERROR, CONSTANT.STATUS.INTERNAL_SERVER_ERROR)
+        return new Failure(message, StatusCodes.INTERNAL_SERVER_ERROR, CONSTANT.INTERNAL_STATUS_CODES.SERVER_ERROR)
     };
 
     static badRequest = (message: string) => {
-        return new Failure(message, StatusCodes.BAD_REQUEST, CONSTANT.STATUS.BAD_REQUEST)
+        return new Failure(message, StatusCodes.BAD_REQUEST, CONSTANT.INTERNAL_STATUS_CODES.BAD_REQUEST)
     };
 
     static conflict = (message: string) => {
-        return new Failure(message, StatusCodes.CONFLICT, CONSTANT.STATUS.CONFLICT)
+        return new Failure(message, StatusCodes.CONFLICT, CONSTANT.INTERNAL_STATUS_CODES.CONFLICT)
     };
 }
 

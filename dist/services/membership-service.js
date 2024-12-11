@@ -18,6 +18,7 @@ const user_model_1 = require("../models/user-model");
 const password_1 = require("../utils/password");
 const jwt_1 = require("../utils/jwt");
 const failure_1 = require("../utils/failure");
+const cloudinary_service_1 = require("./externals/cloudinary-service");
 class MembershipService {
 }
 exports.MembershipService = MembershipService;
@@ -50,7 +51,7 @@ MembershipService.register = (req) => __awaiter(void 0, void 0, void 0, function
     catch (error) {
         if (error instanceof failure_1.Failure)
             throw error;
-        winston_1.logger.error(`[MembershipService.register] Error registering user: ${error}`);
+        winston_1.logger.error(`[MembershipService.register] Error registering user: ${JSON.stringify(error)}`);
         throw failure_1.Failure.internalServer('Failed to register user');
     }
 });
@@ -81,7 +82,7 @@ MembershipService.login = (req) => __awaiter(void 0, void 0, void 0, function* (
     catch (error) {
         if (error instanceof failure_1.Failure)
             throw error;
-        winston_1.logger.error(`[MembershipService.login] Error login user: ${error}`);
+        winston_1.logger.error(`[MembershipService.login] Error login user: ${JSON.stringify(error)}`);
         throw failure_1.Failure.internalServer('Failed to login user');
     }
 });
@@ -108,7 +109,7 @@ MembershipService.getByEmail = (req) => __awaiter(void 0, void 0, void 0, functi
     catch (error) {
         if (error instanceof failure_1.Failure)
             throw error;
-        winston_1.logger.error(`[MembershipService.getById] Error retrieving user by email: ${error}`);
+        winston_1.logger.error(`[MembershipService.getById] Error retrieving user by email: ${JSON.stringify(error)}`);
         throw failure_1.Failure.internalServer('Failed to retrieve user by email');
     }
 });
@@ -139,7 +140,7 @@ MembershipService.updateByEmail = (req) => __awaiter(void 0, void 0, void 0, fun
     catch (error) {
         if (error instanceof failure_1.Failure)
             throw error;
-        winston_1.logger.error(`[MembershipService.updateByEmail] Error updating user by email: ${error}`);
+        winston_1.logger.error(`[MembershipService.updateByEmail] Error updating user by email: ${JSON.stringify(error)}`);
         throw failure_1.Failure.internalServer('Failed to update user by email');
     }
 });
@@ -168,7 +169,42 @@ MembershipService.updateProfileImageByEmail = (req) => __awaiter(void 0, void 0,
     catch (error) {
         if (error instanceof failure_1.Failure)
             throw error;
-        winston_1.logger.error(`[MembershipService.updateProfileImageByEmail] Error updating user profile image by email: ${error}`);
+        winston_1.logger.error(`[MembershipService.updateProfileImageByEmail] Error updating user profile image by email: ${JSON.stringify(error)}`);
+        throw failure_1.Failure.internalServer('Failed to update user profile image by email');
+    }
+});
+MembershipService.updateProfileImageCloudinaryByEmail = (req) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const [users, totalUsers] = yield user_repository_1.UserRepository.findManyAndCountByFilter({
+            selectFields: [
+                user_model_1.userDbField.id,
+            ],
+            filterFields: [{
+                    field: user_model_1.userDbField.email,
+                    operator: 'equals',
+                    value: req.email
+                }]
+        });
+        if (totalUsers === BigInt(0))
+            throw failure_1.Failure.notFound('User with this email not found');
+        // Upload image to cloudinary
+        const response = yield cloudinary_service_1.CloudinaryService.uploadImage({
+            fileName: req.fileName,
+            buffer: req.buffer,
+            mimeType: req.mimeType
+        });
+        const userPrimaryId = { id: users[0].id };
+        yield user_repository_1.UserRepository.updateById(userPrimaryId, {
+            profileImage: response.secure_url,
+            updatedBy: req.email,
+            updatedAt: new Date()
+        });
+        return null;
+    }
+    catch (error) {
+        if (error instanceof failure_1.Failure)
+            throw error;
+        winston_1.logger.error(`[MembershipService.updateProfileImageCloudinaryByEmail] Error updating user profile image by email: ${JSON.stringify(error)}`);
         throw failure_1.Failure.internalServer('Failed to update user profile image by email');
     }
 });

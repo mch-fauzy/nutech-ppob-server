@@ -30,7 +30,7 @@ TransactionController.getBalanceForCurrentUser = (req, res, next) => __awaiter(v
         const response = yield transaction_service_1.TransactionService.getBalanceByEmail({
             email: validatedRequest.email
         });
-        (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.OK, constant_1.CONSTANT.STATUS.SUCCESS, 'Get Balance Success', response);
+        (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.OK, constant_1.CONSTANT.INTERNAL_STATUS_CODES.SUCCESS, 'Get balance success', response);
     }
     catch (error) {
         next(error);
@@ -52,7 +52,7 @@ TransactionController.topUpBalanceForCurrentUser = (req, res, next) => __awaiter
         const response = yield transaction_service_1.TransactionService.getBalanceByEmail({
             email: validatedRequest.email
         });
-        (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.OK, constant_1.CONSTANT.STATUS.SUCCESS, 'Top-Up Balance Success', response);
+        (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.OK, constant_1.CONSTANT.INTERNAL_STATUS_CODES.SUCCESS, 'Top-Up balance success', response);
     }
     catch (error) {
         next(error);
@@ -74,7 +74,7 @@ TransactionController.paymentForCurrentUser = (req, res, next) => __awaiter(void
         const response = yield transaction_service_1.TransactionService.getLatestByEmail({
             email: validatedRequest.email
         });
-        (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.OK, constant_1.CONSTANT.STATUS.SUCCESS, 'Payment Success', response);
+        (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.OK, constant_1.CONSTANT.INTERNAL_STATUS_CODES.SUCCESS, 'Payment success', response);
     }
     catch (error) {
         next(error);
@@ -93,7 +93,7 @@ TransactionController.getListForCurrentUser = (req, res, next) => __awaiter(void
             page: validatedRequest.page,
             pageSize: validatedRequest.pageSize
         });
-        (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.OK, constant_1.CONSTANT.STATUS.SUCCESS, 'Get Transaction List Success', response);
+        (0, response_1.responseWithDetails)(res, http_status_codes_1.StatusCodes.OK, constant_1.CONSTANT.INTERNAL_STATUS_CODES.SUCCESS, 'Get transaction list success', response);
     }
     catch (error) {
         next(error);

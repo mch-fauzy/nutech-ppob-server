@@ -1,6 +1,8 @@
 import Joi from "joi";
 import { JwtPayload } from "jsonwebtoken";
 
+import { CloudinaryUploadImageRequest } from "./externals/cloudinary-dto";
+
 interface MembershipRegisterRequest {
     email: string;
     firstName: string;
@@ -26,6 +28,10 @@ interface MembershipUpdateByEmailRequest {
 interface MembershipUpdateProfileImageByEmailRequest {
     email: string;
     imageUrl: string;
+}
+
+interface MembershipUpdateProfileImageCloudinaryByEmailRequest extends CloudinaryUploadImageRequest {
+    email: string;
 }
 
 interface MembershipLoginResponse {
@@ -83,6 +89,20 @@ class MembershipValidator {
     static validateUpdateProfileImageByEmailRequest = async (req: MembershipUpdateProfileImageByEmailRequest): Promise<MembershipUpdateProfileImageByEmailRequest> => {
         return await this.updateProfileImageByEmailRequestValidator.validateAsync(req);
     };
+
+    private static updateProfileImageByEmailCloudinaryRequestValidator = Joi.object({
+        email: Joi.string().email().required(),
+        fileName: Joi.string().required(),
+        buffer: Joi.any().custom((value, helpers) => {
+            if (!(value instanceof Buffer)) return helpers.error('any.invalid');
+            return value;
+        }).required(),
+        mimeType: Joi.string().required()
+    });
+
+    static validateUpdateProfileImageCloudinaryByEmailRequest = async (req: MembershipUpdateProfileImageCloudinaryByEmailRequest): Promise<MembershipUpdateProfileImageCloudinaryByEmailRequest> => {
+        return await this.updateProfileImageByEmailCloudinaryRequestValidator.validateAsync(req);
+    };
 }
 
 export {
@@ -91,6 +111,7 @@ export {
     MembershipGetByEmailRequest,
     MembershipUpdateByEmailRequest,
     MembershipUpdateProfileImageByEmailRequest,
+    MembershipUpdateProfileImageCloudinaryByEmailRequest,
     MembershipTokenPayload,
     MembershipLoginResponse,
     MembershipValidator

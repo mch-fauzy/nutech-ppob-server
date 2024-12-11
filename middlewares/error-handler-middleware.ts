@@ -21,7 +21,7 @@ const errorHandler = (error: Failure | Error, req: Request, res: Response, next:
     }
 
     // Handle unexpected errors
-    logger.error(`[errorHandler] Unexpected error: ${error}`);
+    logger.error(`[errorHandler] Unexpected error: ${JSON.stringify(error)}`);
     responseWithDetails(res, StatusCodes.INTERNAL_SERVER_ERROR, CONSTANT.INTERNAL_STATUS_CODES.SERVER_ERROR, 'Something went wrong', null);
     next();
 };

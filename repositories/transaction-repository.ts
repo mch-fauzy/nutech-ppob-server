@@ -38,7 +38,7 @@ class TransactionRepository {
         } catch (error) {
             if (error instanceof Failure) throw error;
 
-            logger.error(`[TransactionRepository.create] Error creating transaction: ${error}`);
+            logger.error(`[TransactionRepository.create] Error creating transaction: ${JSON.stringify(error)}`);
             throw Failure.internalServer('Failed to create transaction');
         }
 
@@ -139,7 +139,7 @@ class TransactionRepository {
 
             return [mappedTransactions, totalTransactions[0].count];
         } catch (error) {
-            logger.error(`[TransactionRepository.findManyAndCountByFilter] Error finding and counting transactions by filter: ${error}`);
+            logger.error(`[TransactionRepository.findManyAndCountByFilter] Error finding and counting transactions by filter: ${JSON.stringify(error)}`);
             throw Failure.internalServer('Failed to find and count transactions by filter');
         }
     };

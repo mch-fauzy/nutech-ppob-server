@@ -12,6 +12,7 @@ import {
     MembershipRegisterRequest,
     MembershipUpdateByEmailRequest,
     MembershipUpdateProfileImageByEmailRequest,
+    MembershipUpdateProfileImageCloudinaryByEmailRequest,
     MembershipValidator
 } from '../models/dto/membership-dto';
 import { CONSTANT } from '../utils/constant';
@@ -19,8 +20,10 @@ import {
     responseWithDetails
 } from '../utils/response';
 import { CONFIG } from '../configs/config';
-import { uploadImageToLocal } from '../middlewares/multer-img-middleware';
-import { Failure } from '../utils/failure';
+import {
+    uploadProfileImageToCloud,
+    saveProfileImageToLocal
+} from '../middlewares/multer-middleware';
 
 class MembershipController {
     static register = async (req: Request, res: Response, next: NextFunction) => {
@@ -40,7 +43,7 @@ class MembershipController {
                 password: validatedRequest.password
             });
 
-            responseWithDetails(res, StatusCodes.OK, CONSTANT.STATUS.SUCCESS, 'Register Success', response);
+            responseWithDetails(res, StatusCodes.OK, CONSTANT.INTERNAL_STATUS_CODES.SUCCESS, 'Register success', response);
         } catch (error) {
             next(error);
         }
@@ -59,7 +62,7 @@ class MembershipController {
                 password: validatedRequest.password
             });
 
-            responseWithDetails(res, StatusCodes.OK, CONSTANT.STATUS.SUCCESS, 'Login Success', response);
+            responseWithDetails(res, StatusCodes.OK, CONSTANT.INTERNAL_STATUS_CODES.SUCCESS, 'Login success', response);
         } catch (error) {
             next(error);
         }
@@ -76,7 +79,7 @@ class MembershipController {
                 email: validatedRequest.email
             });
 
-            responseWithDetails(res, StatusCodes.OK, CONSTANT.STATUS.SUCCESS, 'Get Profile For Current User Success', response);
+            responseWithDetails(res, StatusCodes.OK, CONSTANT.INTERNAL_STATUS_CODES.SUCCESS, 'Get profile success', response);
         } catch (error) {
             next(error);
         }
@@ -101,7 +104,7 @@ class MembershipController {
                 email: validatedRequest.email
             });
 
-            responseWithDetails(res, StatusCodes.OK, CONSTANT.STATUS.SUCCESS, 'Update Profile For Current User Success', response);
+            responseWithDetails(res, StatusCodes.OK, CONSTANT.INTERNAL_STATUS_CODES.SUCCESS, 'Update profile success', response);
         } catch (error) {
             next(error);
         }
@@ -109,32 +112,64 @@ class MembershipController {
 
     // TODO: If either on fail, then both fail
     static updateProfileImageForCurrentUser = [
-        uploadImageToLocal,
+        saveProfileImageToLocal,
         async (req: Request, res: Response, next: NextFunction) => {
             try {
-                if (!req.file) throw Failure.badRequest('No file uploaded');
-
                 const request: MembershipUpdateProfileImageByEmailRequest = {
                     email: String(req.headers[CONSTANT.HEADERS.EMAIL]),
-                    imageUrl: `${CONFIG.APP.IMAGE_STATIC_URL}/${req.file.filename}`
+                    imageUrl: `${CONFIG.APP.IMAGE_STATIC_URL}/${req.file!.filename}`
                 };
                 const validatedRequest = await MembershipValidator.validateUpdateProfileImageByEmailRequest(request);
 
+                // Update profile image
                 await MembershipService.updateProfileImageByEmail({
                     email: validatedRequest.email,
                     imageUrl: validatedRequest.imageUrl
                 });
 
+                // Get profile
                 const response = await MembershipService.getByEmail({
                     email: validatedRequest.email
                 });
 
-                responseWithDetails(res, StatusCodes.OK, CONSTANT.STATUS.SUCCESS, 'Update Profile Image For Current User Success', response);
+                responseWithDetails(res, StatusCodes.OK, CONSTANT.INTERNAL_STATUS_CODES.SUCCESS, 'Update profile image success', response);
             } catch (error) {
                 next(error);
             }
-        }]
+        }
+    ];
 
+    static updateProfileImageCloudinaryForCurrentUser = [
+        uploadProfileImageToCloud,
+        async (req: Request, res: Response, next: NextFunction) => {
+            try {
+                const request: MembershipUpdateProfileImageCloudinaryByEmailRequest = {
+                    email: String(req.headers[CONSTANT.HEADERS.EMAIL]),
+                    fileName: req.file!.filename,
+                    buffer: req.file!.buffer,
+                    mimeType: req.file!.mimetype
+                };
+                const validatedRequest = await MembershipValidator.validateUpdateProfileImageCloudinaryByEmailRequest(request);
+
+                // Update profile image and upload the image to cloudinary
+                await MembershipService.updateProfileImageCloudinaryByEmail({
+                    email: validatedRequest.email,
+                    fileName: validatedRequest.fileName,
+                    buffer: validatedRequest.buffer,
+                    mimeType: validatedRequest.mimeType
+                });
+
+                // Get profile
+                const response = await MembershipService.getByEmail({
+                    email: validatedRequest.email
+                });
+
+                responseWithDetails(res, StatusCodes.OK, CONSTANT.INTERNAL_STATUS_CODES.SUCCESS, 'Update profile image success', response);
+            } catch (error) {
+                next(error);
+            }
+        }
+    ];
 }
 
 export { MembershipController };

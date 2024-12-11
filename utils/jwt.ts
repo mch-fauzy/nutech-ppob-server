@@ -12,8 +12,8 @@ const generateToken = (req: Pick<MembershipTokenPayload, 'email'>): MembershipLo
         {
             email: req.email
         },
-        CONFIG.APP.JWT_ACCESS_KEY!,
-        { expiresIn: CONSTANT.JWT.EXPIRY });
+        CONFIG.APP.JWT_ACCESS_SECRET!,
+        { expiresIn: CONSTANT.JWT.EXPIRATION_TIME });
 
     return {
         token: token

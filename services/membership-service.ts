@@ -7,7 +7,8 @@ import {
     MembershipLoginRequest,
     MembershipGetByEmailRequest,
     MembershipUpdateByEmailRequest,
-    MembershipUpdateProfileImageByEmailRequest
+    MembershipUpdateProfileImageByEmailRequest,
+    MembershipUpdateProfileImageCloudinaryByEmailRequest
 } from '../models/dto/membership-dto';
 import { userDbField, UserPrimaryId } from '../models/user-model';
 import {
@@ -16,6 +17,7 @@ import {
 } from '../utils/password';
 import { generateToken } from '../utils/jwt';
 import { Failure } from '../utils/failure';
+import { CloudinaryService } from './externals/cloudinary-service';
 
 class MembershipService {
     static register = async (req: MembershipRegisterRequest) => {
@@ -46,7 +48,7 @@ class MembershipService {
         } catch (error) {
             if (error instanceof Failure) throw error;
 
-            logger.error(`[MembershipService.register] Error registering user: ${error}`);
+            logger.error(`[MembershipService.register] Error registering user: ${JSON.stringify(error)}`);
             throw Failure.internalServer('Failed to register user');
         }
     };
@@ -78,7 +80,7 @@ class MembershipService {
         } catch (error) {
             if (error instanceof Failure) throw error;
 
-            logger.error(`[MembershipService.login] Error login user: ${error}`);
+            logger.error(`[MembershipService.login] Error login user: ${JSON.stringify(error)}`);
             throw Failure.internalServer('Failed to login user');
         }
     };
@@ -105,7 +107,7 @@ class MembershipService {
         } catch (error) {
             if (error instanceof Failure) throw error;
 
-            logger.error(`[MembershipService.getById] Error retrieving user by email: ${error}`);
+            logger.error(`[MembershipService.getById] Error retrieving user by email: ${JSON.stringify(error)}`);
             throw Failure.internalServer('Failed to retrieve user by email');
         }
     };
@@ -125,19 +127,19 @@ class MembershipService {
             if (totalUsers === BigInt(0)) throw Failure.notFound('User with this email not found');
             const user = users[0];
 
-            const userPrimaryId: UserPrimaryId = { id: user.id }
+            const userPrimaryId: UserPrimaryId = { id: user.id };
             await UserRepository.updateById(userPrimaryId, {
                 firstName: req.firstName,
                 lastName: req.lastName,
                 updatedBy: req.email,
                 updatedAt: new Date()
-            })
+            });
 
             return null;
         } catch (error) {
             if (error instanceof Failure) throw error;
 
-            logger.error(`[MembershipService.updateByEmail] Error updating user by email: ${error}`);
+            logger.error(`[MembershipService.updateByEmail] Error updating user by email: ${JSON.stringify(error)}`);
             throw Failure.internalServer('Failed to update user by email');
         }
     };
@@ -156,18 +158,55 @@ class MembershipService {
             });
             if (totalUsers === BigInt(0)) throw Failure.notFound('User with this email not found');
 
-            const userPrimaryId: UserPrimaryId = { id: users[0].id }
+            const userPrimaryId: UserPrimaryId = { id: users[0].id };
             await UserRepository.updateById(userPrimaryId, {
                 profileImage: req.imageUrl,
                 updatedBy: req.email,
                 updatedAt: new Date()
-            })
+            });
 
             return null;
         } catch (error) {
             if (error instanceof Failure) throw error;
 
-            logger.error(`[MembershipService.updateProfileImageByEmail] Error updating user profile image by email: ${error}`);
+            logger.error(`[MembershipService.updateProfileImageByEmail] Error updating user profile image by email: ${JSON.stringify(error)}`);
+            throw Failure.internalServer('Failed to update user profile image by email');
+        }
+    };
+
+    static updateProfileImageCloudinaryByEmail = async (req: MembershipUpdateProfileImageCloudinaryByEmailRequest) => {
+        try {
+            const [users, totalUsers] = await UserRepository.findManyAndCountByFilter({
+                selectFields: [
+                    userDbField.id,
+                ],
+                filterFields: [{
+                    field: userDbField.email,
+                    operator: 'equals',
+                    value: req.email
+                }]
+            });
+            if (totalUsers === BigInt(0)) throw Failure.notFound('User with this email not found');
+
+            // Upload image to cloudinary
+            const response = await CloudinaryService.uploadImage({
+                fileName: req.fileName,
+                buffer: req.buffer,
+                mimeType: req.mimeType
+            });
+
+            const userPrimaryId: UserPrimaryId = { id: users[0].id };
+            await UserRepository.updateById(userPrimaryId, {
+                profileImage: response.secure_url,
+                updatedBy: req.email,
+                updatedAt: new Date()
+            });
+
+            return null;
+        } catch (error) {
+            if (error instanceof Failure) throw error;
+
+            logger.error(`[MembershipService.updateProfileImageCloudinaryByEmail] Error updating user profile image by email: ${JSON.stringify(error)}`);
             throw Failure.internalServer('Failed to update user profile image by email');
         }
     };

@@ -102,7 +102,7 @@ class ServiceRepository {
 
             return [mappedServices, totalServices[0].count];
         } catch (error) {
-            logger.error(`[ServiceRepository.findManyAndCountByFilter] Error finding and counting services by filter: ${error}`);
+            logger.error(`[ServiceRepository.findManyAndCountByFilter] Error finding and counting services by filter: ${JSON.stringify(error)}`);
             throw Failure.internalServer('Failed to find and count services by filter');
         }
     };

@@ -166,7 +166,7 @@
                     "Module Membership"
                 ],
                 "summary": "Update profile image for current user",
-                "operationId": "asdasd",
+                "operationId": "updateProfileImageCloudinaryForCurrentUser",
                 "requestBody": {
                     "required": true,
                     "content": {

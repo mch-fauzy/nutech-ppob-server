@@ -51,7 +51,7 @@ UserRepository.create = (data) => __awaiter(void 0, void 0, void 0, function* ()
     catch (error) {
         if (error instanceof failure_1.Failure)
             throw error;
-        winston_1.logger.error(`[UserRepository.create] Error creating user: ${error}`);
+        winston_1.logger.error(`[UserRepository.create] Error creating user: ${JSON.stringify(error)}`);
         throw failure_1.Failure.internalServer('Failed to create user');
     }
 });
@@ -75,7 +75,7 @@ UserRepository.updateById = (primaryId, data) => __awaiter(void 0, void 0, void 
     catch (error) {
         if (error instanceof failure_1.Failure)
             throw error;
-        winston_1.logger.error(`[UserRepository.updateById] Error updating user by id: ${error}`);
+        winston_1.logger.error(`[UserRepository.updateById] Error updating user by id: ${JSON.stringify(error)}`);
         throw failure_1.Failure.internalServer('Failed to update user by id');
     }
 });
@@ -157,7 +157,7 @@ UserRepository.findManyAndCountByFilter = (filter) => __awaiter(void 0, void 0, 
         return [mappedUsers, totalUsers[0].count];
     }
     catch (error) {
-        winston_1.logger.error(`[UserRepository.findManyAndCountByFilter] Error finding and counting users by filter: ${error}`);
+        winston_1.logger.error(`[UserRepository.findManyAndCountByFilter] Error finding and counting users by filter: ${JSON.stringify(error)}`);
         throw failure_1.Failure.internalServer('Failed to find and count users by filter');
     }
 });
@@ -191,7 +191,7 @@ UserRepository.countByFilter = (filter) => __awaiter(void 0, void 0, void 0, fun
         return totalUsers[0].count;
     }
     catch (error) {
-        winston_1.logger.error(`[UserRepository.countByFilter] Error counting users by filter: ${error}`);
+        winston_1.logger.error(`[UserRepository.countByFilter] Error counting users by filter: ${JSON.stringify(error)}`);
         throw failure_1.Failure.internalServer('Failed to count users by filter');
     }
 });
@@ -207,7 +207,7 @@ UserRepository.existsById = (primaryId) => __awaiter(void 0, void 0, void 0, fun
         return isUserAvailable[0].exists;
     }
     catch (error) {
-        winston_1.logger.error(`[UserRepository.existsById] Error determining user by id: ${error}`);
+        winston_1.logger.error(`[UserRepository.existsById] Error determining user by id: ${JSON.stringify(error)}`);
         throw failure_1.Failure.internalServer('Failed to determine user by id');
     }
 });

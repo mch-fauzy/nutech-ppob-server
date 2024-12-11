@@ -44,7 +44,7 @@ const swaggerRoute = {
 
 if (CONFIG.APP.DOCS === "enabled") {
     router.use(swaggerRoute.path, swaggerRoute.route, swaggerRoute.docs);
-    logger.info(`Swagger documentation enabled on ${swaggerRoute.path}`);
+    logger.info(`Swagger documentation enabled: ${CONFIG.APP.BASE_URL}${swaggerRoute.path}`);
 }
 
 export { router };

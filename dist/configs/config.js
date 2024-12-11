@@ -3,19 +3,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CONFIG = void 0;
 const CONFIG = {
     SERVER: {
-        PORT: process.env.SERVER_PORT,
-        ENV: process.env.SERVER_ENV,
+        PORT: process.env.SERVER_PORT
     },
     APP: {
-        URL: process.env.APP_URL,
+        BASE_URL: process.env.APP_BASE_URL,
         DOCS: process.env.APP_DOCS,
-        JWT_ACCESS_KEY: process.env.JWT_ACCESS_KEY,
-        STATIC: process.env.APP_STATIC,
-        IMAGE_STORAGE_PATH: process.env.APP_IMG_STORAGE_PATH,
-        IMAGE_STATIC_URL: process.env.APP_IMG_STATIC_URL,
+        JWT_ACCESS_SECRET: process.env.APP_JWT_ACCESS_SECRET,
+        STATIC_DIRECTORY: process.env.APP_STATIC_DIRECTORY,
+        IMAGE_STATIC_URL: process.env.APP_IMAGE_STATIC_URL,
+        IMAGE_STORAGE_DIRECTORY: process.env.APP_IMAGE_STORAGE_DIRECTORY
     },
-    DB: {
-        URL: process.env.DATABASE_URL,
+    CLOUDINARY: {
+        CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
+        API_KEY: process.env.CLOUDINARY_API_KEY,
+        API_SECRET: process.env.CLOUDINARY_API_SECRET,
+        IMAGE_STORAGE_DIRECTORY: process.env.CLOUDINARY_IMAGE_STORAGE_DIRECTORY
     }
 };
 exports.CONFIG = CONFIG;

@@ -10,4 +10,5 @@ membershipRouterV1.post('/register', membership_controller_1.MembershipControlle
 membershipRouterV1.post('/login', membership_controller_1.MembershipController.login);
 membershipRouterV1.get('/profile', auth_middleware_1.authenticateToken, membership_controller_1.MembershipController.getProfileForCurrentUser);
 membershipRouterV1.put('/profile/update', auth_middleware_1.authenticateToken, membership_controller_1.MembershipController.updateProfileForCurrentUser);
-membershipRouterV1.put('/profile/image', auth_middleware_1.authenticateToken, membership_controller_1.MembershipController.updateProfileImageForCurrentUser);
+// membershipRouterV1.put('/profile/image', authenticateToken, MembershipController.updateProfileImageForCurrentUser);
+membershipRouterV1.put('/profile/image', auth_middleware_1.authenticateToken, membership_controller_1.MembershipController.updateProfileImageCloudinaryForCurrentUser);

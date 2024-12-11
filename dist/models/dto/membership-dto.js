@@ -56,3 +56,16 @@ MembershipValidator.updateProfileImageByEmailRequestValidator = joi_1.default.ob
 MembershipValidator.validateUpdateProfileImageByEmailRequest = (req) => __awaiter(void 0, void 0, void 0, function* () {
     return yield _a.updateProfileImageByEmailRequestValidator.validateAsync(req);
 });
+MembershipValidator.updateProfileImageByEmailCloudinaryRequestValidator = joi_1.default.object({
+    email: joi_1.default.string().email().required(),
+    fileName: joi_1.default.string().required(),
+    buffer: joi_1.default.any().custom((value, helpers) => {
+        if (!(value instanceof Buffer))
+            return helpers.error('any.invalid');
+        return value;
+    }).required(),
+    mimeType: joi_1.default.string().required()
+});
+MembershipValidator.validateUpdateProfileImageCloudinaryByEmailRequest = (req) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield _a.updateProfileImageByEmailCloudinaryRequestValidator.validateAsync(req);
+});

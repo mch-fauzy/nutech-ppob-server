@@ -47,7 +47,7 @@ TransactionRepository.create = (data) => __awaiter(void 0, void 0, void 0, funct
     catch (error) {
         if (error instanceof failure_1.Failure)
             throw error;
-        winston_1.logger.error(`[TransactionRepository.create] Error creating transaction: ${error}`);
+        winston_1.logger.error(`[TransactionRepository.create] Error creating transaction: ${JSON.stringify(error)}`);
         throw failure_1.Failure.internalServer('Failed to create transaction');
     }
 });
@@ -128,7 +128,7 @@ TransactionRepository.findManyAndCountByFilter = (filter) => __awaiter(void 0, v
         return [mappedTransactions, totalTransactions[0].count];
     }
     catch (error) {
-        winston_1.logger.error(`[TransactionRepository.findManyAndCountByFilter] Error finding and counting transactions by filter: ${error}`);
+        winston_1.logger.error(`[TransactionRepository.findManyAndCountByFilter] Error finding and counting transactions by filter: ${JSON.stringify(error)}`);
         throw failure_1.Failure.internalServer('Failed to find and count transactions by filter');
     }
 });

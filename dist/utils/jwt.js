@@ -7,7 +7,7 @@ const constant_1 = require("./constant");
 const generateToken = (req) => {
     const token = (0, jsonwebtoken_1.sign)({
         email: req.email
-    }, config_1.CONFIG.APP.JWT_ACCESS_KEY, { expiresIn: constant_1.CONSTANT.JWT.EXPIRY });
+    }, config_1.CONFIG.APP.JWT_ACCESS_SECRET, { expiresIn: constant_1.CONSTANT.JWT.EXPIRATION_TIME });
     return {
         token: token
     };

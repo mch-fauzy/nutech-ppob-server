@@ -104,7 +104,7 @@ class BannerRepository {
 
             return [mappedBanners, totalBanners[0].count];
         } catch (error) {
-            logger.error(`[BannerRepository.findManyAndCountByFilter] Error finding and counting banners by filter: ${error}`);
+            logger.error(`[BannerRepository.findManyAndCountByFilter] Error finding and counting banners by filter: ${JSON.stringify(error)}`);
             throw Failure.internalServer('Failed to find and count banners by filter');
         }
     };

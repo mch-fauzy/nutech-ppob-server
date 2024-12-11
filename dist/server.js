@@ -49,7 +49,7 @@ const app = (0, express_1.default)();
 // Declaration of app.use must be ordered, dont random placement
 app.use((0, cors_1.default)());
 app.use((0, express_1.json)());
-app.use(express_1.default.static(config_1.CONFIG.APP.STATIC));
+app.use(express_1.default.static(config_1.CONFIG.APP.STATIC_DIRECTORY));
 app.use('/', routes_1.router);
 app.use(error_handler_middleware_1.errorHandler);
 // Wait for both database and Redis connection
@@ -58,11 +58,11 @@ Promise.all([(0, connection_check_1.initDbConnection)()])
     // Create an HTTP server instance from the Express app
     const server = (0, http_1.createServer)(app);
     server.listen(PORT, () => {
-        winston_1.logger.info(`Server running on ${config_1.CONFIG.APP.URL}:${PORT}`);
+        winston_1.logger.info(`Server running on port: ${PORT}`);
     });
     // Handle startup errors
     server.on('error', (error) => {
-        winston_1.logger.error(`[server] An error occurred while starting the server: ${error}`);
+        winston_1.logger.error(`[server] An error occurred while starting the server: ${JSON.stringify(error)}`);
         process.exit(1);
     });
 });
