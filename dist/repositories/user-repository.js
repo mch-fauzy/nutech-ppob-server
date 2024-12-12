@@ -55,7 +55,7 @@ UserRepository.create = (data) => __awaiter(void 0, void 0, void 0, function* ()
         throw failure_1.Failure.internalServer('Failed to create user');
     }
 });
-UserRepository.updateById = (primaryId, data) => __awaiter(void 0, void 0, void 0, function* () {
+UserRepository.updateById = (primaryId, data, tx) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const isUserAvailable = yield _a.existsById(primaryId);
         if (!isUserAvailable)
@@ -66,7 +66,9 @@ UserRepository.updateById = (primaryId, data) => __awaiter(void 0, void 0, void 
             return client_1.Prisma.sql `${client_1.Prisma.raw(dbField)} = ${value}`;
         });
         const update = client_1.Prisma.join(updateClauses, ', ');
-        yield prisma_client_1.prismaClient.$executeRaw `
+        // Use tx if provided, otherwise fall back to prismaClient
+        const client = tx !== null && tx !== void 0 ? tx : prisma_client_1.prismaClient;
+        yield client.$executeRaw `
                 UPDATE nutech_users
                 SET ${update}
                 WHERE id = ${primaryId.id}

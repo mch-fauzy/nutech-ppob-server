@@ -98,7 +98,6 @@ MembershipController.updateProfileForCurrentUser = (req, res, next) => __awaiter
         next(error);
     }
 });
-// TODO: If either on fail, then both fail
 MembershipController.updateProfileImageForCurrentUser = [
     multer_middleware_1.saveProfileImageToLocal,
     (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

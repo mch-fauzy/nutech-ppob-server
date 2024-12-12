@@ -19,6 +19,7 @@ import { generateInvoiceNumber } from '../utils/generate-invoice-number';
 import { ServiceRepository } from '../repositories/service-repository';
 import { serviceDbField } from '../models/service-model';
 import { transactionDbField } from '../models/transaction-model';
+import { prismaClient } from '../configs/prisma-client';
 
 class TransactionService {
     static topUpBalanceByEmail = async (req: TransactionTopUpBalanceByEmailRequest) => {
@@ -40,9 +41,10 @@ class TransactionService {
             // Simulate top-up logic, ideally will have confirmation if user already pay for topup
             const invoiceNumber = generateInvoiceNumber();
             const userPrimaryId: UserPrimaryId = { id: user.id };
-            // TODO: If either on fail, then both fail
-            await Promise.all([
-                TransactionRepository.create({
+
+            // Wrap the repository operations in a transaction
+            await prismaClient.$transaction(async (tx) => {
+                await TransactionRepository.create({
                     userId: user.id,
                     serviceId: null,
                     transactionType: req.transactionType,
@@ -51,13 +53,18 @@ class TransactionService {
                     createdBy: req.email,
                     updatedBy: req.email,
                     updatedAt: new Date()
-                }),
-                UserRepository.updateById(userPrimaryId, {
+                },
+                    tx
+                );
+
+                await UserRepository.updateById(userPrimaryId, {
                     balance: user.balance + req.topUpAmount,
                     updatedBy: req.email,
                     updatedAt: new Date()
-                })
-            ]);
+                },
+                    tx
+                );
+            });
 
             return null;
         } catch (error) {
@@ -103,9 +110,10 @@ class TransactionService {
 
             const invoiceNumber = generateInvoiceNumber();
             const userPrimaryId: UserPrimaryId = { id: user.id };
-            // TODO: If either on fail, then both fail
-            await Promise.all([
-                TransactionRepository.create({
+
+            // Wrap the repository operations in a transaction
+            await prismaClient.$transaction(async (tx) => {
+                await TransactionRepository.create({
                     userId: user.id,
                     serviceId: service.id,
                     transactionType: req.transactionType,
@@ -114,13 +122,18 @@ class TransactionService {
                     createdBy: req.email,
                     updatedBy: req.email,
                     updatedAt: new Date()
-                }),
-                UserRepository.updateById(userPrimaryId, {
+                },
+                    tx
+                );
+
+                await UserRepository.updateById(userPrimaryId, {
                     balance: user.balance - service.serviceTariff,
                     updatedBy: req.email,
                     updatedAt: new Date()
-                })
-            ])
+                },
+                    tx
+                );
+            });
 
             return null;
         } catch (error) {

@@ -20,6 +20,7 @@ const generate_invoice_number_1 = require("../utils/generate-invoice-number");
 const service_repository_1 = require("../repositories/service-repository");
 const service_model_1 = require("../models/service-model");
 const transaction_model_1 = require("../models/transaction-model");
+const prisma_client_1 = require("../configs/prisma-client");
 class TransactionService {
 }
 exports.TransactionService = TransactionService;
@@ -43,9 +44,9 @@ TransactionService.topUpBalanceByEmail = (req) => __awaiter(void 0, void 0, void
         // Simulate top-up logic, ideally will have confirmation if user already pay for topup
         const invoiceNumber = (0, generate_invoice_number_1.generateInvoiceNumber)();
         const userPrimaryId = { id: user.id };
-        // TODO: If either on fail, then both fail
-        yield Promise.all([
-            transaction_repository_1.TransactionRepository.create({
+        // Wrap the repository operations in a transaction
+        yield prisma_client_1.prismaClient.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+            yield transaction_repository_1.TransactionRepository.create({
                 userId: user.id,
                 serviceId: null,
                 transactionType: req.transactionType,
@@ -54,13 +55,13 @@ TransactionService.topUpBalanceByEmail = (req) => __awaiter(void 0, void 0, void
                 createdBy: req.email,
                 updatedBy: req.email,
                 updatedAt: new Date()
-            }),
-            user_repository_1.UserRepository.updateById(userPrimaryId, {
+            }, tx);
+            yield user_repository_1.UserRepository.updateById(userPrimaryId, {
                 balance: user.balance + req.topUpAmount,
                 updatedBy: req.email,
                 updatedAt: new Date()
-            })
-        ]);
+            }, tx);
+        }));
         return null;
     }
     catch (error) {
@@ -105,9 +106,9 @@ TransactionService.paymentByEmail = (req) => __awaiter(void 0, void 0, void 0, f
             throw failure_1.Failure.badRequest('Insufficient balance to make the payment');
         const invoiceNumber = (0, generate_invoice_number_1.generateInvoiceNumber)();
         const userPrimaryId = { id: user.id };
-        // TODO: If either on fail, then both fail
-        yield Promise.all([
-            transaction_repository_1.TransactionRepository.create({
+        // Wrap the repository operations in a transaction
+        yield prisma_client_1.prismaClient.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+            yield transaction_repository_1.TransactionRepository.create({
                 userId: user.id,
                 serviceId: service.id,
                 transactionType: req.transactionType,
@@ -116,13 +117,13 @@ TransactionService.paymentByEmail = (req) => __awaiter(void 0, void 0, void 0, f
                 createdBy: req.email,
                 updatedBy: req.email,
                 updatedAt: new Date()
-            }),
-            user_repository_1.UserRepository.updateById(userPrimaryId, {
+            }, tx);
+            yield user_repository_1.UserRepository.updateById(userPrimaryId, {
                 balance: user.balance - service.serviceTariff,
                 updatedBy: req.email,
                 updatedAt: new Date()
-            })
-        ]);
+            }, tx);
+        }));
         return null;
     }
     catch (error) {

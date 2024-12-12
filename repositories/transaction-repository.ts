@@ -11,16 +11,18 @@ import { Filter } from '../models/filter';
 import { Failure } from '../utils/failure';
 
 class TransactionRepository {
-    static create = async (data: TransactionCreate) => {
+    static create = async (data: TransactionCreate, tx?: Prisma.TransactionClient) => {
         try {
-            await prismaClient.$executeRaw`
+            // Use tx if provided, otherwise fall back to prismaClient
+            const client = tx ?? prismaClient;
+            await client.$executeRaw`
                 INSERT INTO nutech_transactions (
-                    user_id, 
-                    service_id, 
-                    transaction_type, 
+                    user_id,
+                    service_id,
+                    transaction_type,
                     total_amount,
-                    invoice_number, 
-                    created_by, 
+                    invoice_number,
+                    created_by,
                     updated_by,
                     updated_at
                 )

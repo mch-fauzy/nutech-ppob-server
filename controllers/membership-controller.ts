@@ -111,7 +111,6 @@ class MembershipController {
         }
     };
 
-    // TODO: If either on fail, then both fail
     static updateProfileImageForCurrentUser = [
         saveProfileImageToLocal,
         async (req: Request, res: Response, next: NextFunction) => {

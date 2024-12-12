@@ -19,16 +19,18 @@ class TransactionRepository {
 }
 exports.TransactionRepository = TransactionRepository;
 _a = TransactionRepository;
-TransactionRepository.create = (data) => __awaiter(void 0, void 0, void 0, function* () {
+TransactionRepository.create = (data, tx) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield prisma_client_1.prismaClient.$executeRaw `
+        // Use tx if provided, otherwise fall back to prismaClient
+        const client = tx !== null && tx !== void 0 ? tx : prisma_client_1.prismaClient;
+        yield client.$executeRaw `
                 INSERT INTO nutech_transactions (
                     user_id, 
                     service_id, 
                     transaction_type, 
                     total_amount,
                     invoice_number, 
-                    created_by, 
+                    created_by,
                     updated_by,
                     updated_at
                 )

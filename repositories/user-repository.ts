@@ -52,7 +52,7 @@ class UserRepository {
 
     };
 
-    static updateById = async (primaryId: UserPrimaryId, data: UserUpdate | UserUpdateProfileImage | UserUpdateBalance) => {
+    static updateById = async (primaryId: UserPrimaryId, data: UserUpdate | UserUpdateProfileImage | UserUpdateBalance, tx?: Prisma.TransactionClient) => {
         try {
             const isUserAvailable = await this.existsById(primaryId);
             if (!isUserAvailable) throw Failure.notFound(`User not found`);
@@ -65,7 +65,9 @@ class UserRepository {
 
             const update = Prisma.join(updateClauses, ', ');
 
-            await prismaClient.$executeRaw`
+            // Use tx if provided, otherwise fall back to prismaClient
+            const client = tx ?? prismaClient;
+            await client.$executeRaw`
                 UPDATE nutech_users
                 SET ${update}
                 WHERE id = ${primaryId.id}
