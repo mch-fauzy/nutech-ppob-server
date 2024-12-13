@@ -25,11 +25,11 @@ TransactionRepository.create = (data, tx) => __awaiter(void 0, void 0, void 0, f
         const client = tx !== null && tx !== void 0 ? tx : prisma_client_1.prismaClient;
         yield client.$executeRaw `
                 INSERT INTO nutech_transactions (
-                    user_id, 
-                    service_id, 
-                    transaction_type, 
+                    user_id,
+                    service_id,
+                    transaction_type,
                     total_amount,
-                    invoice_number, 
+                    invoice_number,
                     created_by,
                     updated_by,
                     updated_at

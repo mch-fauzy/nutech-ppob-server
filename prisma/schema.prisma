@@ -23,6 +23,8 @@ model nutech_users {
   deleted_by     String?        @db.Text
 
   transactions   nutech_transactions[]
+
+  @@index([deleted_at])
 }
 
 model nutech_services {
@@ -39,6 +41,8 @@ model nutech_services {
   deleted_by     String?        @db.Text
 
   transactions   nutech_transactions[]
+
+  @@index([deleted_at])
 }
 
 model nutech_banners {
@@ -52,6 +56,8 @@ model nutech_banners {
   updated_by    String?    @db.Text
   deleted_at    DateTime?  @db.Timestamptz(3)
   deleted_by    String?    @db.Text
+
+  @@index([deleted_at])
 }
 
 model nutech_transactions {
@@ -70,4 +76,6 @@ model nutech_transactions {
 
   user             nutech_users  @relation(fields: [user_id], references: [id])
   service          nutech_services? @relation(fields: [service_id], references: [id])
+
+  @@index([user_id, service_id, transaction_type, created_at, invoice_number])
 }

@@ -72,10 +72,22 @@ CREATE TABLE "nutech_transactions" (
 CREATE UNIQUE INDEX "nutech_users_email_key" ON "nutech_users"("email");
 
 -- CreateIndex
+CREATE INDEX "nutech_users_deleted_at_idx" ON "nutech_users"("deleted_at");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "nutech_services_service_code_key" ON "nutech_services"("service_code");
 
 -- CreateIndex
+CREATE INDEX "nutech_services_deleted_at_idx" ON "nutech_services"("deleted_at");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "nutech_banners_banner_name_key" ON "nutech_banners"("banner_name");
+
+-- CreateIndex
+CREATE INDEX "nutech_banners_deleted_at_idx" ON "nutech_banners"("deleted_at");
+
+-- CreateIndex
+CREATE INDEX "nutech_transactions_user_id_service_id_transaction_type_cre_idx" ON "nutech_transactions"("user_id", "service_id", "transaction_type", "created_at", "invoice_number");
 
 -- AddForeignKey
 ALTER TABLE "nutech_transactions" ADD CONSTRAINT "nutech_transactions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "nutech_users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
