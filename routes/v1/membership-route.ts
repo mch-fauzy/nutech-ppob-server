@@ -1,16 +1,24 @@
-import { Router } from 'express';
+import {Router} from 'express';
 
-import { MembershipController } from '../../controllers/membership-controller';
-import { authenticateToken } from '../../middlewares/auth-middleware';
+import {MembershipController} from '../../controllers/membership-controller';
 
 const membershipRouterV1 = Router();
 
 membershipRouterV1.post('/register', MembershipController.register);
 membershipRouterV1.post('/login', MembershipController.login);
 
-membershipRouterV1.get('/profile', authenticateToken, MembershipController.getProfileForCurrentUser);
-membershipRouterV1.put('/profile/update', authenticateToken, MembershipController.updateProfileForCurrentUser);
-// membershipRouterV1.put('/profile/image', authenticateToken, MembershipController.updateProfileImageForCurrentUser);
-membershipRouterV1.put('/profile/image', authenticateToken, MembershipController.updateProfileImageCloudinaryForCurrentUser);
+membershipRouterV1.get(
+  '/profile',
+  MembershipController.getProfileForCurrentUser,
+);
+membershipRouterV1.put(
+  '/profile/update',
+  MembershipController.updateProfileForCurrentUser,
+);
+// membershipRouterV1.put('/profile/image', MembershipController.updateProfileImageForCurrentUser);
+membershipRouterV1.put(
+  '/profile/image',
+  MembershipController.updateProfileImageCloudinaryForCurrentUser,
+);
 
-export { membershipRouterV1 };
+export {membershipRouterV1};

@@ -1,13 +1,24 @@
-import { Router } from 'express';
+import {Router} from 'express';
 
-import { authenticateToken } from '../../middlewares/auth-middleware';
-import { TransactionController } from '../../controllers/transaction-controller';
+import {TransactionController} from '../../controllers/transaction-controller';
 
 const transactionRouterV1 = Router();
 
-transactionRouterV1.get('/balance', authenticateToken, TransactionController.getBalanceForCurrentUser);
-transactionRouterV1.get('/transaction/history', authenticateToken, TransactionController.getListForCurrentUser);
-transactionRouterV1.post('/topup', authenticateToken, TransactionController.topUpBalanceForCurrentUser);
-transactionRouterV1.post('/transaction', authenticateToken, TransactionController.paymentForCurrentUser);
+transactionRouterV1.get(
+  '/balance',
+  TransactionController.getBalanceForCurrentUser,
+);
+transactionRouterV1.get(
+  '/transaction/history',
+  TransactionController.getListForCurrentUser,
+);
+transactionRouterV1.post(
+  '/topup',
+  TransactionController.topUpBalanceForCurrentUser,
+);
+transactionRouterV1.post(
+  '/transaction',
+  TransactionController.paymentForCurrentUser,
+);
 
-export { transactionRouterV1 };
+export {transactionRouterV1};

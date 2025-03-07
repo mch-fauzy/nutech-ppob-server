@@ -1,4 +1,6 @@
 # Nutech PPOB
+[![Code Style: Google](https://img.shields.io/badge/code%20style-google-blueviolet.svg)](https://github.com/google/gts)
+
 Backend server built with NodeJS and Postgresql for managing users, services, banners, and transactions. The project provides functionality to manage users' information, services, and banners, as well as handle transactions. It also includes database migrations and seeding to quickly set up the system
 
 Live demo [_here_](https://nutech-ppob-server.vercel.app/)
@@ -63,7 +65,7 @@ To run this project in local, follow the steps below:
 
 8. Compile Typescript into Javascript code:
    ```
-   npm run build
+   npm run compile
    ```
 
 9. Start the server:
@@ -72,15 +74,15 @@ To run this project in local, follow the steps below:
    ```
 
 10. By default, the server will run in:
-    ```
-    http://localhost:3000
-    ```
+   ```
+   http://localhost:3000
+   ```
 
 11. If you access Swagger docs in local, do not forget to change the servers to localhost
 
 12. If you do not want to run in local, just access link below for live demo:
 
-    [Live Demo](https://nutech-ppob-server.vercel.app/)
+  [Live Demo](https://nutech-ppob-server.vercel.app/)
 
 ## ERD
 

@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 7
+    },
+    "auditLog": "docs/logs/.110403dd33da72ffcf351e60cb1243bb89ad63a8-audit.json",
+    "files": [
+        {
+            "date": 1741319761949,
+            "name": "docs/logs/2025-03-07-nutech-ppob-error.log",
+            "hash": "d73b8ed1d3d9bea0f83df18ccb603c5b317b41a6d5351c9b91e3f9091124c06c"
+        }
+    ],
+    "hashType": "sha256"
+}

@@ -1,23 +1,25 @@
-import { sign } from 'jsonwebtoken';
+import {sign} from 'jsonwebtoken';
 
 import {
-    MembershipLoginResponse,
-    MembershipTokenPayload
+  MembershipLoginResponse,
+  MembershipTokenPayload,
 } from '../models/dto/membership-dto';
-import { CONFIG } from '../configs/config';
-import { CONSTANT } from './constant';
+import {CONFIG} from '../configs/config';
+import {CONSTANT} from './constant';
 
-const generateToken = (req: Pick<MembershipTokenPayload, 'email'>): MembershipLoginResponse => {
-    const token = sign(
-        {
-            email: req.email
-        },
-        CONFIG.APP.JWT_ACCESS_SECRET!,
-        { expiresIn: CONSTANT.JWT.EXPIRATION_TIME });
+/**
+ * Generates a JSON Web Token (JWT) for user authentication
+ */
+const generateToken = ({
+  email,
+}: Pick<MembershipTokenPayload, 'email'>): MembershipLoginResponse => {
+  const token = sign({email}, CONFIG.APP.JWT_ACCESS_SECRET!, {
+    expiresIn: CONSTANT.JWT.EXPIRATION_TIME,
+  });
 
-    return {
-        token: token
-    };
+  return {
+    token,
+  };
 };
 
-export { generateToken };
+export {generateToken};

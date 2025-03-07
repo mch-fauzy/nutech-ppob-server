@@ -1,215 +1,240 @@
-import { v4 as uuidv4 } from 'uuid';
+import {v4 as uuidv4, v5 as uuidv5} from 'uuid';
 
-import { logger } from '../configs/winston';
-import { UserRepository } from '../repositories/user-repository';
-import {
-    MembershipRegisterRequest,
-    MembershipLoginRequest,
-    MembershipGetByEmailRequest,
-    MembershipUpdateByEmailRequest,
-    MembershipUpdateProfileImageByEmailRequest,
-    MembershipUpdateProfileImageCloudinaryByEmailRequest
+import {UserRepository} from '../repositories/user-repository';
+import type {
+  MembershipRegisterRequest,
+  MembershipLoginRequest,
+  MembershipGetByEmailRequest,
+  MembershipUpdateProfileByEmailRequest,
+  MembershipUpdateProfileImageByEmailRequest,
+  MembershipUpdateProfileImageCloudinaryByEmailRequest,
 } from '../models/dto/membership-dto';
-import { userDbField, UserPrimaryId } from '../models/user-model';
-import {
-    comparePassword,
-    hashPassword
-} from '../utils/password';
-import { generateToken } from '../utils/jwt';
-import { Failure } from '../utils/failure';
-import { CloudinaryService } from './externals/cloudinary-service';
+import {USER_DB_FIELD} from '../models/user-model';
+import {comparePassword, hashPassword} from '../utils/password';
+import {generateToken} from '../utils/jwt';
+import {Failure} from '../utils/failure';
+import {CloudinaryService} from './externals/cloudinary-service';
+import {handleError} from '../utils/error-handler';
 
 class MembershipService {
-    static register = async (req: MembershipRegisterRequest) => {
-        try {
-            const totalUsers = await UserRepository.countByFilter({
-                filterFields: [{
-                    field: userDbField.email,
-                    operator: 'equals',
-                    value: req.email
-                }]
-            });
-            if (totalUsers !== BigInt(0)) throw Failure.conflict('User with this email already exists');
+  static register = async (req: MembershipRegisterRequest) => {
+    try {
+      const totalUsers = await UserRepository.countByFilter({
+        filterFields: [
+          {
+            field: USER_DB_FIELD.email,
+            operator: 'equals',
+            value: req.email,
+          },
+        ],
+      });
+      if (totalUsers !== BigInt(0))
+        throw Failure.conflict('User with this email is already exists');
 
-            const id = uuidv4();
-            const hashedPassword = await hashPassword(req.password);
-            await UserRepository.create({
-                id,
-                email: req.email,
-                firstName: req.firstName,
-                lastName: req.lastName,
-                password: hashedPassword,
-                createdBy: req.email,
-                updatedBy: req.email,
-                updatedAt: new Date()
-            });
+      const hashedPassword = await hashPassword({password: req.password});
+      await UserRepository.create({
+        id: uuidv5(req.email, uuidv4()),
+        email: req.email,
+        password: hashedPassword,
+        firstName: req.firstName,
+        lastName: req.lastName,
+        createdBy: req.email,
+        updatedBy: req.email,
+        updatedAt: new Date(),
+      });
 
-            return null;
-        } catch (error) {
-            if (error instanceof Failure) throw error;
+      return null;
+    } catch (error) {
+      throw handleError({operationName: 'MembershipService.register', error});
+    }
+  };
 
-            logger.error(`[MembershipService.register] Error registering user: ${JSON.stringify(error)}`);
-            throw Failure.internalServer('Failed to register user');
-        }
-    };
+  static login = async (req: MembershipLoginRequest) => {
+    try {
+      const [users, totalUsers] = await UserRepository.findManyAndCountByFilter(
+        {
+          selectFields: [USER_DB_FIELD.email, USER_DB_FIELD.password],
+          filterFields: [
+            {
+              field: USER_DB_FIELD.email,
+              operator: 'equals',
+              value: req.email,
+            },
+          ],
+        },
+      );
+      if (totalUsers === BigInt(0))
+        throw Failure.invalidCredentials('Email or Password is not valid');
 
-    static login = async (req: MembershipLoginRequest) => {
-        try {
-            const [users, totalUsers] = await UserRepository.findManyAndCountByFilter({
-                selectFields: [
-                    userDbField.email,
-                    userDbField.password,
-                ],
-                filterFields: [{
-                    field: userDbField.email,
-                    operator: 'equals',
-                    value: req.email
-                }]
-            });
-            if (totalUsers === BigInt(0)) throw Failure.invalidCredentials('Invalid email or password');
-            const user = users[0];
+      const user = users[0];
 
-            const isValidPassword = await comparePassword(req.password, user.password);
-            if (!isValidPassword) throw Failure.invalidCredentials('Invalid email or password');
+      const isValidPassword = await comparePassword({
+        password: req.password,
+        hashedPassword: user.password,
+      });
+      if (!isValidPassword)
+        throw Failure.invalidCredentials('Email or Password is not valid');
 
-            const response = generateToken({
-                email: user.email
-            });
+      const response = generateToken({
+        email: user.email,
+      });
 
-            return response;
-        } catch (error) {
-            if (error instanceof Failure) throw error;
+      return response;
+    } catch (error) {
+      throw handleError({operationName: 'MembershipService.login', error});
+    }
+  };
 
-            logger.error(`[MembershipService.login] Error login user: ${JSON.stringify(error)}`);
-            throw Failure.internalServer('Failed to login user');
-        }
-    };
+  static getByEmail = async (req: MembershipGetByEmailRequest) => {
+    try {
+      const [users, totalUsers] = await UserRepository.findManyAndCountByFilter(
+        {
+          selectFields: [
+            USER_DB_FIELD.email,
+            USER_DB_FIELD.firstName,
+            USER_DB_FIELD.lastName,
+            USER_DB_FIELD.profileImage,
+          ],
+          filterFields: [
+            {
+              field: USER_DB_FIELD.email,
+              operator: 'equals',
+              value: req.email,
+            },
+          ],
+        },
+      );
+      if (totalUsers === BigInt(0))
+        throw Failure.notFound('User with this email is not found');
+      const user = users[0];
 
-    static getByEmail = async (req: MembershipGetByEmailRequest) => {
-        try {
-            const [users, totalUsers] = await UserRepository.findManyAndCountByFilter({
-                selectFields: [
-                    userDbField.email,
-                    userDbField.firstName,
-                    userDbField.lastName,
-                    userDbField.profileImage
-                ],
-                filterFields: [{
-                    field: userDbField.email,
-                    operator: 'equals',
-                    value: req.email
-                }]
-            });
-            if (totalUsers === BigInt(0)) throw Failure.notFound('User with this email not found');
-            const user = users[0];
+      return user;
+    } catch (error) {
+      throw handleError({operationName: 'MembershipService.getByEmail', error});
+    }
+  };
 
-            return user
-        } catch (error) {
-            if (error instanceof Failure) throw error;
+  static updateProfileByEmail = async (
+    req: MembershipUpdateProfileByEmailRequest,
+  ) => {
+    try {
+      const [users, totalUsers] = await UserRepository.findManyAndCountByFilter(
+        {
+          selectFields: [USER_DB_FIELD.id],
+          filterFields: [
+            {
+              field: USER_DB_FIELD.email,
+              operator: 'equals',
+              value: req.email,
+            },
+          ],
+        },
+      );
+      if (totalUsers === BigInt(0))
+        throw Failure.notFound('User with this email is not found');
 
-            logger.error(`[MembershipService.getById] Error retrieving user by email: ${JSON.stringify(error)}`);
-            throw Failure.internalServer('Failed to retrieve user by email');
-        }
-    };
+      const user = users[0];
+      await UserRepository.updateById({
+        id: user.id,
+        data: {
+          firstName: req.firstName,
+          lastName: req.lastName,
+          updatedBy: req.email,
+          updatedAt: new Date(),
+        },
+      });
 
-    static updateByEmail = async (req: MembershipUpdateByEmailRequest) => {
-        try {
-            const [users, totalUsers] = await UserRepository.findManyAndCountByFilter({
-                selectFields: [
-                    userDbField.id,
-                ],
-                filterFields: [{
-                    field: userDbField.email,
-                    operator: 'equals',
-                    value: req.email
-                }]
-            });
-            if (totalUsers === BigInt(0)) throw Failure.notFound('User with this email not found');
-            const user = users[0];
+      return null;
+    } catch (error) {
+      throw handleError({
+        operationName: 'MembershipService.updateProfileByEmail',
+        error,
+      });
+    }
+  };
 
-            const userPrimaryId: UserPrimaryId = { id: user.id };
-            await UserRepository.updateById(userPrimaryId, {
-                firstName: req.firstName,
-                lastName: req.lastName,
-                updatedBy: req.email,
-                updatedAt: new Date()
-            });
+  static updateProfileImageByEmail = async (
+    req: MembershipUpdateProfileImageByEmailRequest,
+  ) => {
+    try {
+      const [users, totalUsers] = await UserRepository.findManyAndCountByFilter(
+        {
+          selectFields: [USER_DB_FIELD.id],
+          filterFields: [
+            {
+              field: USER_DB_FIELD.email,
+              operator: 'equals',
+              value: req.email,
+            },
+          ],
+        },
+      );
+      if (totalUsers === BigInt(0))
+        throw Failure.notFound('User with this email is not found');
 
-            return null;
-        } catch (error) {
-            if (error instanceof Failure) throw error;
+      const user = users[0];
+      await UserRepository.updateById({
+        id: user.id,
+        data: {
+          profileImage: req.imageUrl,
+          updatedBy: req.email,
+          updatedAt: new Date(),
+        },
+      });
 
-            logger.error(`[MembershipService.updateByEmail] Error updating user by email: ${JSON.stringify(error)}`);
-            throw Failure.internalServer('Failed to update user by email');
-        }
-    };
+      return null;
+    } catch (error) {
+      throw handleError({
+        operationName: 'MembershipService.updateProfileImageByEmail',
+        error,
+      });
+    }
+  };
 
-    static updateProfileImageByEmail = async (req: MembershipUpdateProfileImageByEmailRequest) => {
-        try {
-            const [users, totalUsers] = await UserRepository.findManyAndCountByFilter({
-                selectFields: [
-                    userDbField.id,
-                ],
-                filterFields: [{
-                    field: userDbField.email,
-                    operator: 'equals',
-                    value: req.email
-                }]
-            });
-            if (totalUsers === BigInt(0)) throw Failure.notFound('User with this email not found');
+  static updateProfileImageCloudinaryByEmail = async (
+    req: MembershipUpdateProfileImageCloudinaryByEmailRequest,
+  ) => {
+    try {
+      const [users, totalUsers] = await UserRepository.findManyAndCountByFilter(
+        {
+          selectFields: [USER_DB_FIELD.id],
+          filterFields: [
+            {
+              field: USER_DB_FIELD.email,
+              operator: 'equals',
+              value: req.email,
+            },
+          ],
+        },
+      );
+      if (totalUsers === BigInt(0))
+        throw Failure.notFound('User with this email is not found');
 
-            const userPrimaryId: UserPrimaryId = { id: users[0].id };
-            await UserRepository.updateById(userPrimaryId, {
-                profileImage: req.imageUrl,
-                updatedBy: req.email,
-                updatedAt: new Date()
-            });
+      // Upload image to Cloudinary
+      const response = await CloudinaryService.uploadImage({
+        fileName: req.fileName,
+        buffer: req.buffer,
+        mimeType: req.mimeType,
+      });
 
-            return null;
-        } catch (error) {
-            if (error instanceof Failure) throw error;
+      const user = users[0];
+      await UserRepository.updateById({
+        id: user.id,
+        data: {
+          profileImage: response.secure_url,
+          updatedBy: req.email,
+          updatedAt: new Date(),
+        },
+      });
 
-            logger.error(`[MembershipService.updateProfileImageByEmail] Error updating user profile image by email: ${JSON.stringify(error)}`);
-            throw Failure.internalServer('Failed to update user profile image by email');
-        }
-    };
-
-    static updateProfileImageCloudinaryByEmail = async (req: MembershipUpdateProfileImageCloudinaryByEmailRequest) => {
-        try {
-            const [users, totalUsers] = await UserRepository.findManyAndCountByFilter({
-                selectFields: [
-                    userDbField.id,
-                ],
-                filterFields: [{
-                    field: userDbField.email,
-                    operator: 'equals',
-                    value: req.email
-                }]
-            });
-            if (totalUsers === BigInt(0)) throw Failure.notFound('User with this email not found');
-
-            // Upload image to cloudinary
-            const response = await CloudinaryService.uploadImage({
-                fileName: req.fileName,
-                buffer: req.buffer,
-                mimeType: req.mimeType
-            });
-
-            const userPrimaryId: UserPrimaryId = { id: users[0].id };
-            await UserRepository.updateById(userPrimaryId, {
-                profileImage: response.secure_url,
-                updatedBy: req.email,
-                updatedAt: new Date()
-            });
-
-            return null;
-        } catch (error) {
-            if (error instanceof Failure) throw error;
-
-            logger.error(`[MembershipService.updateProfileImageCloudinaryByEmail] Error updating user profile image by email: ${JSON.stringify(error)}`);
-            throw Failure.internalServer('Failed to update user profile image by email');
-        }
-    };
+      return null;
+    } catch (error) {
+      throw handleError({
+        operationName: 'MembershipService.updateProfileImageCloudinaryByEmail',
+        error,
+      });
+    }
+  };
 }
 
-export { MembershipService };
+export {MembershipService};

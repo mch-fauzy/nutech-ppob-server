@@ -1,7 +1,7 @@
 interface CloudinaryUploadImageRequest {
-    fileName: string;
-    buffer: Buffer;
-    mimeType: string;
+  fileName: string;
+  buffer: Buffer;
+  mimeType: string;
 }
 
-export { CloudinaryUploadImageRequest };
+export {CloudinaryUploadImageRequest};

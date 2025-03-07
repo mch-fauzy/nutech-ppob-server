@@ -1,37 +1,59 @@
-import express, { json } from 'express';
-import { createServer } from 'http';
+import express, {json} from 'express';
+import {createServer} from 'http';
 import cors from 'cors';
 
-import { CONFIG } from './configs/config';
-import { logger } from './configs/winston';
-import { errorHandler } from './middlewares/error-handler-middleware';
-import { router } from './routes';
-import { initDbConnection } from './utils/connection-check';
+import {CONFIG} from './configs/config';
+import {ErrorResponseMiddleware} from './middlewares/error-response-middleware';
+import {MorganMiddleware} from './middlewares/morgan-middleware';
+import {router} from './routes';
+import {logInfo} from './utils/logger';
+import {handleError} from './utils/error-handler';
+import {prismaClient} from './configs/prisma-client';
 
-const PORT = CONFIG.SERVER.PORT!;
+/** Initialize Express application */
 const app = express();
+const port = CONFIG.SERVER.PORT;
 
-// Declaration of app.use must be ordered, dont random placement
+/** Set up middlewares in a defined order */
 app.use(cors());
 app.use(json());
+app.use(MorganMiddleware.handler);
 app.use(express.static(CONFIG.APP.STATIC_DIRECTORY!));
-
 app.use('/', router);
-app.use(errorHandler);
+app.use(ErrorResponseMiddleware.handler);
 
-// Wait for both database and Redis connection
-Promise.all([initDbConnection()])
-    .then(() => {
-        // Create an HTTP server instance from the Express app
-        const server = createServer(app);
+/** Function to ping the database */
+const pingDatabase = async (): Promise<void> => {
+  await prismaClient.$queryRaw`SELECT 1`;
+  logInfo('Connected to Database');
+};
 
-        server.listen(PORT, () => {
-            logger.info(`Server running on port: ${PORT}`);
-        });
+/** Function to start the server */
+const startServer = async (): Promise<void> => {
+  try {
+    /** Wait for database connection */
+    await pingDatabase();
 
-        // Handle startup errors
-        server.on('error', (error) => {
-            logger.error(`[server] An error occurred while starting the server: ${JSON.stringify(error)}`);
-            process.exit(1);
-        });
+    /** Create an HTTP server instance from the Express app */
+    const server = createServer(app);
+    server.listen(port, () => {
+      logInfo(`Server running. Port: ${port}`);
     });
+
+    /** Handle server runtime errors */
+    server.on('error', error => {
+      throw handleError({
+        operationName: 'startServer',
+        error,
+      });
+    });
+  } catch (error) {
+    throw handleError({
+      operationName: 'startServer',
+      error,
+    });
+  }
+};
+
+/** void: Explicitly ignore the return result of a function */
+void startServer();
