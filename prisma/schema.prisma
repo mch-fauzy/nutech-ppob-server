@@ -8,7 +8,7 @@ datasource db {
 }
 
 model NutechUsers {
-  id           String    @id @default(uuid()) @db.Text
+  id           String    @id @default(uuid()) @db.Text // if you want to autogenerate uuid from db @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   email        String    @unique @db.Text
   password     String    @db.Text
   firstName    String    @map("first_name") @db.Text
