@@ -46,14 +46,6 @@ class UserRepository {
             // output of Object.entries(object) => [['name', 'Anton'], ['age', 22]]
             const updateClauses = Object.entries(data).map(([key, value]) => {
                 const dbField = user_model_1.USER_DB_FIELD[key]; // Assign key as the key of type USER_DB_FIELD
-                /* Handle update balance atomically */
-                if (key === user_model_1.USER_DB_FIELD.balance) {
-                    if (typeof value !== 'number')
-                        throw failure_1.Failure.badRequest('Balance must be a number');
-                    if (value > 0)
-                        return client_1.Prisma.sql `${client_1.Prisma.raw(dbField)} = ${client_1.Prisma.raw(dbField)} + ${value}`;
-                    return client_1.Prisma.sql `${client_1.Prisma.raw(dbField)} = ${client_1.Prisma.raw(dbField)} - ${Math.abs(value)}`;
-                }
                 return client_1.Prisma.sql `${client_1.Prisma.raw(dbField)} = ${value}`;
             });
             const update = client_1.Prisma.join(updateClauses, ', ');

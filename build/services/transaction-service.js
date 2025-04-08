@@ -31,10 +31,13 @@ class TransactionService {
             // Wrap the repository operations in a transaction
             await (0, db_transaction_1.withTransactionRetry)({
                 transactionFn: async (tx) => {
-                    /*
-                      No need `FOR UPDATE` clause like in UserRepository.findById, because `updateById` already ensures atomic updates for balance
-                      You may need UserRepository.findById (with FOR UPDATE), if you retrieve user balance first then increment the balance (balance: user.balance + req.topUpAmout)
-                    */
+                    const currentUser = await user_repository_1.UserRepository.findById({
+                        id: user.id,
+                        filter: {
+                            selectFields: [user_model_1.USER_DB_FIELD.balance],
+                        },
+                        tx,
+                    });
                     await transaction_repository_1.TransactionRepository.create({
                         userId: user.id,
                         serviceId: null,
@@ -48,7 +51,7 @@ class TransactionService {
                     await user_repository_1.UserRepository.updateById({
                         id: user.id,
                         data: {
-                            balance: +req.topUpAmount,
+                            balance: currentUser.balance + req.topUpAmount,
                             updatedBy: req.email,
                             updatedAt: new Date(),
                         },
@@ -123,7 +126,7 @@ class TransactionService {
                     await user_repository_1.UserRepository.updateById({
                         id: user.id,
                         data: {
-                            balance: -service.serviceTariff,
+                            balance: currentUser.balance - service.serviceTariff,
                             updatedBy: req.email,
                             updatedAt: new Date(),
                         },
