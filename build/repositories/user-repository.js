@@ -9,9 +9,6 @@ const error_handler_1 = require("../utils/error-handler");
 class UserRepository {
     static create = async (data) => {
         try {
-            const isUserAvailable = await this.existsById({ id: data.id });
-            if (isUserAvailable)
-                throw failure_1.Failure.conflict('User with this id is already exists');
             await prisma_client_1.prismaClient.$executeRaw `
         INSERT INTO nutech_users (
           id, 
@@ -49,6 +46,14 @@ class UserRepository {
             // output of Object.entries(object) => [['name', 'Anton'], ['age', 22]]
             const updateClauses = Object.entries(data).map(([key, value]) => {
                 const dbField = user_model_1.USER_DB_FIELD[key]; // Assign key as the key of type USER_DB_FIELD
+                /* Handle update balance atomically */
+                if (key === user_model_1.USER_DB_FIELD.balance) {
+                    if (typeof value !== 'number')
+                        throw failure_1.Failure.badRequest('Balance must be a number');
+                    if (value > 0)
+                        return client_1.Prisma.sql `${client_1.Prisma.raw(dbField)} = ${client_1.Prisma.raw(dbField)} + ${value}`;
+                    return client_1.Prisma.sql `${client_1.Prisma.raw(dbField)} = ${client_1.Prisma.raw(dbField)} - ${Math.abs(value)}`;
+                }
                 return client_1.Prisma.sql `${client_1.Prisma.raw(dbField)} = ${value}`;
             });
             const update = client_1.Prisma.join(updateClauses, ', ');
@@ -111,18 +116,18 @@ class UserRepository {
                 : client_1.Prisma.sql ``;
             // Query
             const SelectUsersQuery = client_1.Prisma.sql `
-                SELECT ${select}
-                FROM nutech_users
-                ${where}
-                ${orderBy}
-                ${limit}
-                ${offset}
-            `;
+        SELECT ${select}
+        FROM nutech_users
+        ${where}
+        ${orderBy}
+        ${limit}
+        ${offset}
+      `;
             const countUsersQuery = client_1.Prisma.sql `
-                SELECT COUNT(*) as count
-                FROM nutech_users
-                ${where}
-            `;
+        SELECT COUNT(*) as count
+        FROM nutech_users
+        ${where}
+      `;
             const [users, totalUsers] = await prisma_client_1.prismaClient.$transaction([
                 prisma_client_1.prismaClient.$queryRaw(SelectUsersQuery),
                 prisma_client_1.prismaClient.$queryRaw(countUsersQuery),
@@ -173,10 +178,10 @@ class UserRepository {
                 ? client_1.Prisma.sql `WHERE ${client_1.Prisma.join(whereClauses, ' AND ')}`
                 : client_1.Prisma.sql ``;
             const totalUsers = await prisma_client_1.prismaClient.$queryRaw `
-                    SELECT COUNT (*) as count
-                    FROM nutech_users
-                    ${where}
-            `;
+        SELECT COUNT (*) as count
+        FROM nutech_users
+        ${where}
+      `;
             return totalUsers[0].count;
         }
         catch (error) {
@@ -189,17 +194,62 @@ class UserRepository {
     static existsById = async (primaryId) => {
         try {
             const isUserAvailable = await prisma_client_1.prismaClient.$queryRaw `
-                SELECT EXISTS (
-                    SELECT 1
-                    FROM nutech_users
-                    WHERE id = ${primaryId.id}
-                ) as exists
-            `;
+        SELECT EXISTS (
+            SELECT 1
+            FROM nutech_users
+            WHERE id = ${primaryId.id}
+        ) as exists
+      `;
             return isUserAvailable[0].exists;
         }
         catch (error) {
             throw (0, error_handler_1.handleError)({
                 operationName: 'UserRepository.existsById',
+                error,
+            });
+        }
+    };
+    static findById = async (params) => {
+        try {
+            const { id, filter, tx } = params;
+            const isUserAvailable = await this.existsById({ id });
+            if (!isUserAvailable)
+                throw failure_1.Failure.notFound('User is not found');
+            const selectClause = filter.selectFields?.length
+                ? client_1.Prisma.join(filter.selectFields.map(field => client_1.Prisma.raw(field)), ', ')
+                : undefined;
+            const select = selectClause ? client_1.Prisma.sql `${selectClause}` : client_1.Prisma.sql `*`;
+            const client = tx ?? prisma_client_1.prismaClient;
+            /* If using tx client, lock row FOR UPDATE to make the unabled to access by other */
+            const lockClause = tx ? client_1.Prisma.sql `FOR UPDATE` : client_1.Prisma.sql ``;
+            /* queryRaw always return array [] */
+            const users = await client.$queryRaw `
+        SELECT ${select}
+        FROM nutech_users
+        WHERE id = ${id}
+        ${lockClause}
+      `;
+            const user = users[0];
+            const mappedUser = {
+                id: user.id,
+                email: user.email,
+                password: user.password,
+                firstName: user.first_name,
+                lastName: user.last_name,
+                profileImage: user.profile_image,
+                balance: user.balance,
+                createdAt: user.created_at,
+                createdBy: user.created_by,
+                updatedAt: user.updated_at,
+                updatedBy: user.updated_by,
+                deletedAt: user.deleted_at,
+                deletedBy: user.deleted_by,
+            };
+            return mappedUser;
+        }
+        catch (error) {
+            throw (0, error_handler_1.handleError)({
+                operationName: 'UserRepository.findById',
                 error,
             });
         }

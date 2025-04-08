@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client';
+import { Filter } from './filter';
 declare const USER_DB_FIELD: {
     readonly id: "id";
     readonly email: "email";
@@ -49,9 +50,14 @@ interface UserUpdate {
     data: UserUpdateProfile | UserUpdateProfileImage | UserUpdateBalance;
     tx?: Prisma.TransactionClient;
 }
+interface UserFind {
+    id: string;
+    filter: Pick<Filter, 'selectFields'>;
+    tx?: Prisma.TransactionClient;
+}
 type UserPrimaryId = Pick<User, 'id'>;
 type UserCreate = Pick<User, 'id' | 'email' | 'password' | 'firstName' | 'lastName' | 'createdBy' | 'updatedBy' | 'updatedAt'>;
 type UserUpdateProfile = Pick<User, 'firstName' | 'lastName' | 'updatedBy' | 'updatedAt'>;
 type UserUpdateProfileImage = Pick<User, 'profileImage' | 'updatedBy' | 'updatedAt'>;
 type UserUpdateBalance = Pick<User, 'balance' | 'updatedBy' | 'updatedAt'>;
-export { USER_DB_FIELD, UserDb, User, UserPrimaryId, UserCreate, UserUpdate };
+export { USER_DB_FIELD, UserDb, User, UserPrimaryId, UserCreate, UserUpdate, UserFind, };

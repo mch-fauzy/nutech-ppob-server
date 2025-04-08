@@ -7,7 +7,7 @@ const CONFIG = {
     },
     APP: {
         NAME: process.env.APP_NAME,
-        BASE_URL: process.env.APP_BASE_URL,
+        URL: process.env.APP_URL,
         DOCS: process.env.APP_DOCS,
         JWT_ACCESS_SECRET: process.env.APP_JWT_ACCESS_SECRET,
         STATIC_DIRECTORY: process.env.APP_STATIC_DIRECTORY,
@@ -20,6 +20,7 @@ const CONFIG = {
         API_SECRET: process.env.CLOUDINARY_API_SECRET,
         IMAGE_STORAGE_DIRECTORY: process.env.CLOUDINARY_IMAGE_STORAGE_DIRECTORY,
     },
+    BCRYPT_SALT_ROUNDS: process.env.BCRYPT_SALT_ROUNDS,
 };
 exports.CONFIG = CONFIG;
 //# sourceMappingURL=config.js.map

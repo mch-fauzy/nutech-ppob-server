@@ -43,6 +43,6 @@ const swaggerRoute = {
 };
 if (config_1.CONFIG.APP.DOCS === 'enabled') {
     router.use(swaggerRoute.path, swaggerRoute.route, swaggerRoute.docs);
-    (0, logger_1.logInfo)(`Swagger documentation enabled. URL: ${config_1.CONFIG.APP.BASE_URL}${swaggerRoute.path}`);
+    (0, logger_1.logInfo)(`Swagger documentation enabled. URL: ${config_1.CONFIG.APP.URL}${swaggerRoute.path}`);
 }
 //# sourceMappingURL=index.js.map

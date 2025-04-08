@@ -26,7 +26,7 @@ const consoleLogTransport = new winston_1.transports.Console({
 });
 const winstonLogger = (0, winston_1.createLogger)({
     defaultMeta: { appName: config_1.CONFIG.APP.NAME },
-    transports: [consoleLogTransport, /* errorLogRotateTransport */],
+    transports: [consoleLogTransport /* errorLogRotateTransport */],
 });
 exports.winstonLogger = winstonLogger;
 //# sourceMappingURL=winston.js.map

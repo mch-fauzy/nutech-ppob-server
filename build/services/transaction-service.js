@@ -9,13 +9,13 @@ const generate_invoice_number_1 = require("../utils/generate-invoice-number");
 const service_repository_1 = require("../repositories/service-repository");
 const service_model_1 = require("../models/service-model");
 const transaction_model_1 = require("../models/transaction-model");
-const prisma_client_1 = require("../configs/prisma-client");
 const error_handler_1 = require("../utils/error-handler");
+const db_transaction_1 = require("../utils/db-transaction");
 class TransactionService {
     static topUpBalanceByEmail = async (req) => {
         try {
             const [users, totalUsers] = await user_repository_1.UserRepository.findManyAndCountByFilter({
-                selectFields: [user_model_1.USER_DB_FIELD.id, user_model_1.USER_DB_FIELD.balance],
+                selectFields: [user_model_1.USER_DB_FIELD.id],
                 filterFields: [
                     {
                         field: user_model_1.USER_DB_FIELD.email,
@@ -29,26 +29,34 @@ class TransactionService {
             const user = users[0];
             // Simulate top-up logic, ideally will have confirmation if user already pay for topup
             // Wrap the repository operations in a transaction
-            await prisma_client_1.prismaClient.$transaction(async (tx) => {
-                await transaction_repository_1.TransactionRepository.create({
-                    userId: user.id,
-                    serviceId: null,
-                    transactionType: req.transactionType,
-                    totalAmount: req.topUpAmount,
-                    invoiceNumber: (0, generate_invoice_number_1.generateInvoiceNumber)(),
-                    createdBy: req.email,
-                    updatedBy: req.email,
-                    updatedAt: new Date(),
-                }, tx);
-                await user_repository_1.UserRepository.updateById({
-                    id: user.id,
-                    data: {
-                        balance: user.balance + req.topUpAmount,
+            await (0, db_transaction_1.withTransactionRetry)({
+                transactionFn: async (tx) => {
+                    /*
+                      No need `FOR UPDATE` clause like in UserRepository.findById, because `updateById` already ensures atomic updates for balance
+                      You may need UserRepository.findById (with FOR UPDATE), if you retrieve user balance first then increment the balance (balance: user.balance + req.topUpAmout)
+                    */
+                    await transaction_repository_1.TransactionRepository.create({
+                        userId: user.id,
+                        serviceId: null,
+                        transactionType: req.transactionType,
+                        totalAmount: req.topUpAmount,
+                        invoiceNumber: (0, generate_invoice_number_1.generateInvoiceNumber)(),
+                        createdBy: req.email,
                         updatedBy: req.email,
                         updatedAt: new Date(),
-                    },
-                    tx,
-                });
+                    }, tx);
+                    await user_repository_1.UserRepository.updateById({
+                        id: user.id,
+                        data: {
+                            balance: +req.topUpAmount,
+                            updatedBy: req.email,
+                            updatedAt: new Date(),
+                        },
+                        tx,
+                    });
+                },
+                /* Higher isolation levels offer stronger data consistency but decreased concurrency and performance*/
+                isolationLevel: 'Serializable',
             });
             return null;
         }
@@ -62,7 +70,7 @@ class TransactionService {
     static paymentByEmail = async (req) => {
         try {
             const [users, totalUsers] = await user_repository_1.UserRepository.findManyAndCountByFilter({
-                selectFields: [user_model_1.USER_DB_FIELD.id, user_model_1.USER_DB_FIELD.balance],
+                selectFields: [user_model_1.USER_DB_FIELD.id],
                 filterFields: [
                     {
                         field: user_model_1.USER_DB_FIELD.email,
@@ -88,29 +96,42 @@ class TransactionService {
                 throw failure_1.Failure.notFound('Service with this code not found');
             const service = services[0];
             // Simulate payment logic, ideally will have confirmation if user already pay for payment
-            if (user.balance < service.serviceTariff)
-                throw failure_1.Failure.badRequest('Insufficient balance to make the payment');
             // Wrap the repository operations in a transaction
-            await prisma_client_1.prismaClient.$transaction(async (tx) => {
-                await transaction_repository_1.TransactionRepository.create({
-                    userId: user.id,
-                    serviceId: service.id,
-                    transactionType: req.transactionType,
-                    totalAmount: service.serviceTariff,
-                    invoiceNumber: (0, generate_invoice_number_1.generateInvoiceNumber)(),
-                    createdBy: req.email,
-                    updatedBy: req.email,
-                    updatedAt: new Date(),
-                }, tx);
-                await user_repository_1.UserRepository.updateById({
-                    id: user.id,
-                    data: {
-                        balance: user.balance - service.serviceTariff,
+            await (0, db_transaction_1.withTransactionRetry)({
+                transactionFn: async (tx) => {
+                    const currentUser = await user_repository_1.UserRepository.findById({
+                        id: user.id,
+                        filter: {
+                            selectFields: [user_model_1.USER_DB_FIELD.balance],
+                        },
+                        tx,
+                    });
+                    /* Check if balance is undefined OR balance is higher than tariff */
+                    if (!currentUser.balance ||
+                        currentUser.balance < service.serviceTariff)
+                        throw failure_1.Failure.badRequest('Insufficient balance to make the payment');
+                    await transaction_repository_1.TransactionRepository.create({
+                        userId: user.id,
+                        serviceId: service.id,
+                        transactionType: req.transactionType,
+                        totalAmount: service.serviceTariff,
+                        invoiceNumber: (0, generate_invoice_number_1.generateInvoiceNumber)(),
+                        createdBy: req.email,
                         updatedBy: req.email,
                         updatedAt: new Date(),
-                    },
-                    tx,
-                });
+                    }, tx);
+                    await user_repository_1.UserRepository.updateById({
+                        id: user.id,
+                        data: {
+                            balance: -service.serviceTariff,
+                            updatedBy: req.email,
+                            updatedAt: new Date(),
+                        },
+                        tx,
+                    });
+                },
+                /* Higher isolation levels offer stronger data consistency but decreased concurrency and performance*/
+                isolationLevel: 'Serializable',
             });
             return null;
         }

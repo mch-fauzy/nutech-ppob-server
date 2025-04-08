@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.USER_DB_FIELD = void 0;
 // Read-only property
+// TODO: DB_FIELD taruh di constant
 const USER_DB_FIELD = {
     id: 'id',
     email: 'email',

@@ -4,7 +4,7 @@ declare const CONFIG: {
     };
     APP: {
         NAME: string | undefined;
-        BASE_URL: string | undefined;
+        URL: string | undefined;
         DOCS: string | undefined;
         JWT_ACCESS_SECRET: string | undefined;
         STATIC_DIRECTORY: string | undefined;
@@ -17,5 +17,6 @@ declare const CONFIG: {
         API_SECRET: string | undefined;
         IMAGE_STORAGE_DIRECTORY: string | undefined;
     };
+    BCRYPT_SALT_ROUNDS: string | undefined;
 };
 export { CONFIG };
