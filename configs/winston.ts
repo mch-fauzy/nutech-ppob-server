@@ -33,7 +33,7 @@ const consoleLogTransport = new transports.Console({
 
 const winstonLogger = createLogger({
   defaultMeta: {appName: CONFIG.APP.NAME}, // Saved in error log via errorLogRotateTransport
-  transports: [consoleLogTransport, /* errorLogRotateTransport */],
+  transports: [consoleLogTransport /* errorLogRotateTransport */],
 });
 
 export {winstonLogger};
