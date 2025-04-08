@@ -1,6 +1,8 @@
 import {Prisma} from '@prisma/client';
+import {Filter} from './filter';
 
 // Read-only property
+// TODO: DB_FIELD taruh di constant
 const USER_DB_FIELD = {
   id: 'id',
   email: 'email',
@@ -55,6 +57,12 @@ interface UserUpdate {
   tx?: Prisma.TransactionClient;
 }
 
+interface UserFind {
+  id: string;
+  filter: Pick<Filter, 'selectFields'>;
+  tx?: Prisma.TransactionClient;
+}
+
 type UserPrimaryId = Pick<User, 'id'>;
 
 // Other fields either auto generated using default (like balance, createdAt) or nullable
@@ -82,4 +90,12 @@ type UserUpdateProfileImage = Pick<
 
 type UserUpdateBalance = Pick<User, 'balance' | 'updatedBy' | 'updatedAt'>;
 
-export {USER_DB_FIELD, UserDb, User, UserPrimaryId, UserCreate, UserUpdate};
+export {
+  USER_DB_FIELD,
+  UserDb,
+  User,
+  UserPrimaryId,
+  UserCreate,
+  UserUpdate,
+  UserFind,
+};

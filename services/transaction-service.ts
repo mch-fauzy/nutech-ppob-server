@@ -15,8 +15,8 @@ import {generateInvoiceNumber} from '../utils/generate-invoice-number';
 import {ServiceRepository} from '../repositories/service-repository';
 import {serviceDbField} from '../models/service-model';
 import {transactionDbField} from '../models/transaction-model';
-import {prismaClient} from '../configs/prisma-client';
 import {handleError} from '../utils/error-handler';
+import {withTransactionRetry} from '../utils/db-transaction';
 
 class TransactionService {
   static topUpBalanceByEmail = async (
@@ -25,7 +25,7 @@ class TransactionService {
     try {
       const [users, totalUsers] = await UserRepository.findManyAndCountByFilter(
         {
-          selectFields: [USER_DB_FIELD.id, USER_DB_FIELD.balance],
+          selectFields: [USER_DB_FIELD.id],
           filterFields: [
             {
               field: USER_DB_FIELD.email,
@@ -41,30 +41,38 @@ class TransactionService {
 
       // Simulate top-up logic, ideally will have confirmation if user already pay for topup
       // Wrap the repository operations in a transaction
-      await prismaClient.$transaction(async tx => {
-        await TransactionRepository.create(
-          {
-            userId: user.id,
-            serviceId: null,
-            transactionType: req.transactionType,
-            totalAmount: req.topUpAmount,
-            invoiceNumber: generateInvoiceNumber(),
-            createdBy: req.email,
-            updatedBy: req.email,
-            updatedAt: new Date(),
-          },
-          tx,
-        );
+      await withTransactionRetry({
+        transactionFn: async tx => {
+          /*
+            No need `FOR UPDATE` clause like in UserRepository.findById, because `updateById` already ensures atomic updates for balance
+            You may need UserRepository.findById (with FOR UPDATE), if you retrieve user balance first then increment the balance (balance: user.balance + req.topUpAmout)
+          */
+          await TransactionRepository.create(
+            {
+              userId: user.id,
+              serviceId: null,
+              transactionType: req.transactionType,
+              totalAmount: req.topUpAmount,
+              invoiceNumber: generateInvoiceNumber(),
+              createdBy: req.email,
+              updatedBy: req.email,
+              updatedAt: new Date(),
+            },
+            tx,
+          );
 
-        await UserRepository.updateById({
-          id: user.id,
-          data: {
-            balance: user.balance + req.topUpAmount,
-            updatedBy: req.email,
-            updatedAt: new Date(),
-          },
-          tx,
-        });
+          await UserRepository.updateById({
+            id: user.id,
+            data: {
+              balance: +req.topUpAmount, // Why balance: req.topUpAmount? The increment atomically handled by repository updateById
+              updatedBy: req.email,
+              updatedAt: new Date(),
+            },
+            tx,
+          });
+        },
+        /* Higher isolation levels offer stronger data consistency but decreased concurrency and performance*/
+        isolationLevel: 'Serializable',
       });
 
       return null;
@@ -80,7 +88,7 @@ class TransactionService {
     try {
       const [users, totalUsers] = await UserRepository.findManyAndCountByFilter(
         {
-          selectFields: [USER_DB_FIELD.id, USER_DB_FIELD.balance],
+          selectFields: [USER_DB_FIELD.id],
           filterFields: [
             {
               field: USER_DB_FIELD.email,
@@ -112,34 +120,52 @@ class TransactionService {
       const service = services[0];
 
       // Simulate payment logic, ideally will have confirmation if user already pay for payment
-      if (user.balance < service.serviceTariff)
-        throw Failure.badRequest('Insufficient balance to make the payment');
-
       // Wrap the repository operations in a transaction
-      await prismaClient.$transaction(async tx => {
-        await TransactionRepository.create(
-          {
-            userId: user.id,
-            serviceId: service.id,
-            transactionType: req.transactionType,
-            totalAmount: service.serviceTariff,
-            invoiceNumber: generateInvoiceNumber(),
-            createdBy: req.email,
-            updatedBy: req.email,
-            updatedAt: new Date(),
-          },
-          tx,
-        );
+      await withTransactionRetry({
+        transactionFn: async tx => {
+          const currentUser = await UserRepository.findById({
+            id: user.id,
+            filter: {
+              selectFields: [USER_DB_FIELD.balance],
+            },
+            tx,
+          });
 
-        await UserRepository.updateById({
-          id: user.id,
-          data: {
-            balance: user.balance - service.serviceTariff,
-            updatedBy: req.email,
-            updatedAt: new Date(),
-          },
-          tx,
-        });
+          /* Check if balance is undefined OR balance is higher than tariff */
+          if (
+            !currentUser.balance ||
+            currentUser.balance < service.serviceTariff
+          )
+            throw Failure.badRequest(
+              'Insufficient balance to make the payment',
+            );
+
+          await TransactionRepository.create(
+            {
+              userId: user.id,
+              serviceId: service.id,
+              transactionType: req.transactionType,
+              totalAmount: service.serviceTariff,
+              invoiceNumber: generateInvoiceNumber(),
+              createdBy: req.email,
+              updatedBy: req.email,
+              updatedAt: new Date(),
+            },
+            tx,
+          );
+
+          await UserRepository.updateById({
+            id: user.id,
+            data: {
+              balance: -service.serviceTariff, // Why balance: -service.serviceTariff? The decrement handled by repository updateById
+              updatedBy: req.email,
+              updatedAt: new Date(),
+            },
+            tx,
+          });
+        },
+        /* Higher isolation levels offer stronger data consistency but decreased concurrency and performance*/
+        isolationLevel: 'Serializable',
       });
 
       return null;

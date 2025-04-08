@@ -210,6 +210,17 @@ const handlePrismaError = ({
 
         return Failure.notFound(`${message}. Reference Id: ${referenceId}`);
       }
+      case 'P2034': {
+        const message = 'Error occurs due to a write conflict or a deadlock';
+        logError({
+          message,
+          operationName,
+          error,
+          referenceId,
+        });
+
+        return Failure.notFound(`${message}. Reference Id: ${referenceId}`);
+      }
       default: {
         const message =
           'Unrecognized known error occurs while processing the request';
