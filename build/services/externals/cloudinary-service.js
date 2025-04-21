@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CloudinaryService = void 0;
 const cloudinary_1 = require("cloudinary");
 const config_1 = require("../../configs/config");
-const error_handler_1 = require("../../utils/error-handler");
+const error_handler_1 = require("../../common/utils/errors/error-handler");
 /**
  * Service to interact with the Cloudinary API for image management
  */
@@ -19,18 +19,6 @@ class CloudinaryService {
             api_secret: config_1.CONFIG.CLOUDINARY.API_SECRET,
             secure: true,
         });
-    };
-    /**
-     * Determines whether the provided error is an instance of UploadApiErrorResponse
-     * @param error The error object to check
-     * @return True if the error is an UploadApiErrorResponse, otherwise false
-     */
-    static isUploadApiErrorResponse = (error) => {
-        if (typeof error !== 'object' || error === null)
-            return false;
-        const hasHttpCodeProperty = 'http_code' in error && !('stack' in error);
-        const hasErrorProperty = 'error' in error;
-        return hasHttpCodeProperty || hasErrorProperty;
     };
     /**
      * Uploads an image buffer to Cloudinary with specified options

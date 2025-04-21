@@ -3,8 +3,9 @@ import {Prisma} from '@prisma/client';
 import {prismaClient} from '../configs/prisma-client';
 import {Filter} from '../models/filter';
 import {Service, ServiceDb} from '../models/service-model';
-import {handleError} from '../utils/error-handler';
+import {handleError} from '../common/utils/errors/error-handler';
 
+// TODO: ADD RETURN TYPE (IF NOT NATIVE TYPE) IN CONTROLLER, SERVICE, REPO AND ADD MIDDLEWARE OR UTILS TO response with data (message, data) or response with error (message, errors)
 class ServiceRepository {
   static findManyAndCountByFilter = async (
     filter: Filter,

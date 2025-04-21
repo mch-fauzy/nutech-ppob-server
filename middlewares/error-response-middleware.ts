@@ -1,10 +1,11 @@
 import {NextFunction, Request, Response} from 'express';
 import {StatusCodes} from 'http-status-codes';
 
-import {Failure} from '../utils/failure';
-import {responseWithDetails} from '../utils/response';
-import {CONSTANT} from '../utils/constant';
-import {logUnknownError} from '../utils/logger';
+import {Failure} from '../common/utils/errors/failure';
+import {responseWithDetails} from '../common/utils/http/response';
+import {INTERNAL_STATUS_CODE} from '../common/constants/internal-status-code-constant';
+import {ERROR_MESSAGE} from '../common/constants/error-message-constant';
+import {logUnknownError} from '../common/utils/logging/logger';
 
 class ErrorResponseMiddleware {
   // NextFunction must be included to make error response handler middleware to work properly
@@ -25,7 +26,7 @@ class ErrorResponseMiddleware {
       responseWithDetails(
         res,
         StatusCodes.BAD_REQUEST,
-        CONSTANT.INTERNAL_STATUS_CODE.BAD_REQUEST,
+        INTERNAL_STATUS_CODE.BAD_REQUEST,
         error.message,
         null,
       );
@@ -34,7 +35,7 @@ class ErrorResponseMiddleware {
 
     // Response with unknown errors
     logUnknownError({
-      message: CONSTANT.ERROR_MESSAGE.UNKNOWN,
+      message: ERROR_MESSAGE.UNKNOWN,
       operationName: 'errorApiResponseHandler',
       error: error,
     });
@@ -42,8 +43,8 @@ class ErrorResponseMiddleware {
     responseWithDetails(
       res,
       StatusCodes.INTERNAL_SERVER_ERROR,
-      CONSTANT.INTERNAL_STATUS_CODE.SERVER_ERROR,
-      CONSTANT.ERROR_MESSAGE.UNKNOWN,
+      INTERNAL_STATUS_CODE.SERVER_ERROR,
+      ERROR_MESSAGE.UNKNOWN,
       null,
     );
     next();

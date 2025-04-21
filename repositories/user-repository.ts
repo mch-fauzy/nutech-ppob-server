@@ -4,20 +4,21 @@ import {prismaClient} from '../configs/prisma-client';
 import {
   User,
   UserCreate,
-  USER_DB_FIELD,
   UserPrimaryId,
   UserUpdate,
   UserDb,
   UserFind,
 } from '../models/user-model';
 import {Filter} from '../models/filter';
-import {Failure} from '../utils/failure';
-import {handleError} from '../utils/error-handler';
+import {Failure} from '../common/utils/errors/failure';
+import {handleError} from '../common/utils/errors/error-handler';
+import {DB_FIELD} from '../common/constants/db-field-constant';
 
+// TODO: ADD RETURN TYPE (IF NOT NATIVE TYPE) IN CONTROLLER, SERVICE, REPO AND ADD MIDDLEWARE OR UTILS TO response with data (message, data) or response with error (message, errors)
 class UserRepository {
   static create = async (data: UserCreate) => {
     try {
-      await prismaClient.$executeRaw`
+      return await prismaClient.$executeRaw`
         INSERT INTO nutech_users (
           id, 
           email, 
@@ -53,14 +54,14 @@ class UserRepository {
 
       // output of Object.entries(object) => [['name', 'Anton'], ['age', 22]]
       const updateClauses = Object.entries(data).map(([key, value]) => {
-        const dbField = USER_DB_FIELD[key as keyof typeof USER_DB_FIELD]; // Assign key as the key of type USER_DB_FIELD
+        const dbField = DB_FIELD[key as keyof typeof DB_FIELD]; // Assign key as the key of type USER_DB_FIELD
         return Prisma.sql`${Prisma.raw(dbField)} = ${value}`;
       });
       const update = Prisma.join(updateClauses, ', ');
 
       // Use tx if provided, otherwise fall back to prismaClient
       const client = tx ?? prismaClient;
-      await client.$executeRaw`
+      return await client.$executeRaw`
                 UPDATE nutech_users
                 SET ${update}
                 WHERE id = ${id}

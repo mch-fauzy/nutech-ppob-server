@@ -1,24 +1,6 @@
 import {Prisma} from '@prisma/client';
 import {Filter} from './filter';
 
-// Read-only property
-// TODO: DB_FIELD taruh di constant
-const USER_DB_FIELD = {
-  id: 'id',
-  email: 'email',
-  password: 'password',
-  firstName: 'first_name',
-  lastName: 'last_name',
-  profileImage: 'profile_image',
-  balance: 'balance',
-  createdAt: 'created_at',
-  createdBy: 'created_by',
-  updatedAt: 'updated_at',
-  updatedBy: 'updated_by',
-  deletedAt: 'deleted_at',
-  deletedBy: 'deleted_by',
-} as const;
-
 interface UserDb {
   id: string;
   email: string;
@@ -90,12 +72,4 @@ type UserUpdateProfileImage = Pick<
 
 type UserUpdateBalance = Pick<User, 'balance' | 'updatedBy' | 'updatedAt'>;
 
-export {
-  USER_DB_FIELD,
-  UserDb,
-  User,
-  UserPrimaryId,
-  UserCreate,
-  UserUpdate,
-  UserFind,
-};
+export {UserDb, User, UserPrimaryId, UserCreate, UserUpdate, UserFind};

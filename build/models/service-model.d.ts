@@ -1,16 +1,3 @@
-declare const serviceDbField: {
-    readonly id: "id";
-    readonly serviceCode: "service_code";
-    readonly serviceName: "service_name";
-    readonly serviceIcon: "service_icon";
-    readonly serviceTariff: "service_tariff";
-    readonly createdAt: "created_at";
-    readonly createdBy: "created_by";
-    readonly updatedAt: "updated_at";
-    readonly updatedBy: "updated_by";
-    readonly deletedAt: "deleted_at";
-    readonly deletedBy: "deleted_by";
-};
 declare enum ServiceCode {
     PAJAK = "PAJAK",
     PLN = "PLN",
@@ -51,4 +38,4 @@ interface Service {
     deletedAt: Date | null;
     deletedBy: string | null;
 }
-export { serviceDbField, ServiceCode, ServiceDb, Service };
+export { ServiceCode, ServiceDb, Service };

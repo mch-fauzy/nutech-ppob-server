@@ -1,20 +1,5 @@
 import { Prisma } from '@prisma/client';
 import { Filter } from './filter';
-declare const USER_DB_FIELD: {
-    readonly id: "id";
-    readonly email: "email";
-    readonly password: "password";
-    readonly firstName: "first_name";
-    readonly lastName: "last_name";
-    readonly profileImage: "profile_image";
-    readonly balance: "balance";
-    readonly createdAt: "created_at";
-    readonly createdBy: "created_by";
-    readonly updatedAt: "updated_at";
-    readonly updatedBy: "updated_by";
-    readonly deletedAt: "deleted_at";
-    readonly deletedBy: "deleted_by";
-};
 interface UserDb {
     id: string;
     email: string;
@@ -60,4 +45,4 @@ type UserCreate = Pick<User, 'id' | 'email' | 'password' | 'firstName' | 'lastNa
 type UserUpdateProfile = Pick<User, 'firstName' | 'lastName' | 'updatedBy' | 'updatedAt'>;
 type UserUpdateProfileImage = Pick<User, 'profileImage' | 'updatedBy' | 'updatedAt'>;
 type UserUpdateBalance = Pick<User, 'balance' | 'updatedBy' | 'updatedAt'>;
-export { USER_DB_FIELD, UserDb, User, UserPrimaryId, UserCreate, UserUpdate, UserFind, };
+export { UserDb, User, UserPrimaryId, UserCreate, UserUpdate, UserFind };

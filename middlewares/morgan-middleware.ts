@@ -1,6 +1,6 @@
 import morgan from 'morgan';
 
-import {logInfo} from '../utils/logger';
+import {logInfo} from '../common/utils/logging/logger';
 
 class MorganMiddleware {
   static handler = morgan('dev', {

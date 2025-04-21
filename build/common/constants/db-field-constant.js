@@ -1,0 +1,32 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.DB_FIELD = void 0;
+const DB_FIELD = {
+    ID: 'id',
+    BANNER_NAME: 'banner_name',
+    BANNER_IMAGE: 'banner_image',
+    DESCRIPTION: 'description',
+    SERVICE_CODE: 'service_code',
+    SERVICE_NAME: 'service_name',
+    SERVICE_ICON: 'service_icon',
+    SERVICE_TARIFF: 'service_tariff',
+    USER_ID: 'user_id',
+    SERVICE_ID: 'service_id',
+    TRANSACTION_TYPE: 'transaction_type',
+    TOTAL_AMOUNT: 'total_amount',
+    INVOICE_NUMBER: 'invoice_number',
+    EMAIL: 'email',
+    PASSWORD: 'password',
+    FIRST_NAME: 'first_name',
+    LAST_NAME: 'last_name',
+    PROFILE_IMAGE: 'profile_image',
+    BALANCE: 'balance',
+    CREATED_AT: 'created_at',
+    CREATED_BY: 'created_by',
+    UPDATED_AT: 'updated_at',
+    UPDATED_BY: 'updated_by',
+    DELETED_AT: 'deleted_at',
+    DELETED_BY: 'deleted_by',
+};
+exports.DB_FIELD = DB_FIELD;
+//# sourceMappingURL=db-field-constant.js.map

@@ -1,8 +1,8 @@
 import {Prisma} from '@prisma/client';
 
 import {prismaClient} from '../configs/prisma-client';
-import {logInfo} from '../utils/logger';
-import {handleError} from '../utils/error-handler';
+import {logInfo} from '../common/utils/logging/logger';
+import {handleError} from '../common/utils/errors/error-handler';
 
 const insertBannersQuery = Prisma.sql`
 INSERT INTO nutech_banners (banner_name, banner_image, description, updated_at)

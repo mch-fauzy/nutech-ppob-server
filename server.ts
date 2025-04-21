@@ -6,8 +6,8 @@ import {CONFIG} from './configs/config';
 import {ErrorResponseMiddleware} from './middlewares/error-response-middleware';
 import {MorganMiddleware} from './middlewares/morgan-middleware';
 import {router} from './routes';
-import {logInfo} from './utils/logger';
-import {handleError} from './utils/error-handler';
+import {logInfo} from './common/utils/logging/logger';
+import {handleError} from './common/utils/errors/error-handler';
 import {prismaClient} from './configs/prisma-client';
 
 /** Initialize Express application */

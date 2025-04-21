@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const client_1 = require("@prisma/client");
 const prisma_client_1 = require("../configs/prisma-client");
-const logger_1 = require("../utils/logger");
-const error_handler_1 = require("../utils/error-handler");
+const logger_1 = require("../common/utils/logging/logger");
+const error_handler_1 = require("../common/utils/errors/error-handler");
 const insertBannersQuery = client_1.Prisma.sql `
 INSERT INTO nutech_banners (banner_name, banner_image, description, updated_at)
 VALUES

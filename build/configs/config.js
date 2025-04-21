@@ -20,7 +20,7 @@ const CONFIG = {
         API_SECRET: process.env.CLOUDINARY_API_SECRET,
         IMAGE_STORAGE_DIRECTORY: process.env.CLOUDINARY_IMAGE_STORAGE_DIRECTORY,
     },
-    BCRYPT_SALT_ROUNDS: process.env.BCRYPT_SALT_ROUNDS,
+    BCRYPT_SALT_ROUNDS: Number(process.env.BCRYPT_SALT_ROUNDS) || 10,
 };
 exports.CONFIG = CONFIG;
 //# sourceMappingURL=config.js.map

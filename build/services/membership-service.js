@@ -3,19 +3,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MembershipService = void 0;
 const uuid_1 = require("uuid");
 const user_repository_1 = require("../repositories/user-repository");
-const user_model_1 = require("../models/user-model");
-const password_1 = require("../utils/password");
-const jwt_1 = require("../utils/jwt");
-const failure_1 = require("../utils/failure");
+const db_field_constant_1 = require("../common/constants/db-field-constant");
+const password_1 = require("../common/utils/auth/password");
+const jwt_1 = require("../common/utils/auth/jwt");
+const failure_1 = require("../common/utils/errors/failure");
 const cloudinary_service_1 = require("./externals/cloudinary-service");
-const error_handler_1 = require("../utils/error-handler");
+const error_handler_1 = require("../common/utils/errors/error-handler");
+// TODO: ADD RETURN TYPE (IF NOT NATIVE TYPE) IN CONTROLLER, SERVICE, REPO AND ADD MIDDLEWARE OR UTILS TO response with data (message, data) or response with error (message, errors)
 class MembershipService {
     static register = async (req) => {
         try {
             const totalUsers = await user_repository_1.UserRepository.countByFilter({
                 filterFields: [
                     {
-                        field: user_model_1.USER_DB_FIELD.email,
+                        field: db_field_constant_1.DB_FIELD.EMAIL,
                         operator: 'equals',
                         value: req.email,
                     },
@@ -43,10 +44,10 @@ class MembershipService {
     static login = async (req) => {
         try {
             const [users, totalUsers] = await user_repository_1.UserRepository.findManyAndCountByFilter({
-                selectFields: [user_model_1.USER_DB_FIELD.email, user_model_1.USER_DB_FIELD.password],
+                selectFields: [db_field_constant_1.DB_FIELD.EMAIL, db_field_constant_1.DB_FIELD.PASSWORD],
                 filterFields: [
                     {
-                        field: user_model_1.USER_DB_FIELD.email,
+                        field: db_field_constant_1.DB_FIELD.EMAIL,
                         operator: 'equals',
                         value: req.email,
                     },
@@ -74,14 +75,14 @@ class MembershipService {
         try {
             const [users, totalUsers] = await user_repository_1.UserRepository.findManyAndCountByFilter({
                 selectFields: [
-                    user_model_1.USER_DB_FIELD.email,
-                    user_model_1.USER_DB_FIELD.firstName,
-                    user_model_1.USER_DB_FIELD.lastName,
-                    user_model_1.USER_DB_FIELD.profileImage,
+                    db_field_constant_1.DB_FIELD.EMAIL,
+                    db_field_constant_1.DB_FIELD.FIRST_NAME,
+                    db_field_constant_1.DB_FIELD.LAST_NAME,
+                    db_field_constant_1.DB_FIELD.PROFILE_IMAGE,
                 ],
                 filterFields: [
                     {
-                        field: user_model_1.USER_DB_FIELD.email,
+                        field: db_field_constant_1.DB_FIELD.EMAIL,
                         operator: 'equals',
                         value: req.email,
                     },
@@ -99,10 +100,10 @@ class MembershipService {
     static updateProfileByEmail = async (req) => {
         try {
             const [users, totalUsers] = await user_repository_1.UserRepository.findManyAndCountByFilter({
-                selectFields: [user_model_1.USER_DB_FIELD.id],
+                selectFields: [db_field_constant_1.DB_FIELD.ID],
                 filterFields: [
                     {
-                        field: user_model_1.USER_DB_FIELD.email,
+                        field: db_field_constant_1.DB_FIELD.EMAIL,
                         operator: 'equals',
                         value: req.email,
                     },
@@ -132,10 +133,10 @@ class MembershipService {
     static updateProfileImageByEmail = async (req) => {
         try {
             const [users, totalUsers] = await user_repository_1.UserRepository.findManyAndCountByFilter({
-                selectFields: [user_model_1.USER_DB_FIELD.id],
+                selectFields: [db_field_constant_1.DB_FIELD.ID],
                 filterFields: [
                     {
-                        field: user_model_1.USER_DB_FIELD.email,
+                        field: db_field_constant_1.DB_FIELD.EMAIL,
                         operator: 'equals',
                         value: req.email,
                     },
@@ -164,10 +165,10 @@ class MembershipService {
     static updateProfileImageCloudinaryByEmail = async (req) => {
         try {
             const [users, totalUsers] = await user_repository_1.UserRepository.findManyAndCountByFilter({
-                selectFields: [user_model_1.USER_DB_FIELD.id],
+                selectFields: [db_field_constant_1.DB_FIELD.ID],
                 filterFields: [
                     {
-                        field: user_model_1.USER_DB_FIELD.email,
+                        field: db_field_constant_1.DB_FIELD.EMAIL,
                         operator: 'equals',
                         value: req.email,
                     },

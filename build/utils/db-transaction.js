@@ -5,7 +5,7 @@ const client_1 = require("@prisma/client");
 const prisma_client_1 = require("../configs/prisma-client");
 const failure_1 = require("./failure");
 const withTransactionRetry = async (params) => {
-    const { transactionFn, maxRetries = 5, isolationLevel } = params;
+    const { maxRetries = 5, isolationLevel, transactionFn } = params;
     let retries = 0;
     while (retries < maxRetries) {
         try {

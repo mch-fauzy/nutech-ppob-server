@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthMiddleware = void 0;
 const jsonwebtoken_1 = require("jsonwebtoken");
 const config_1 = require("../configs/config");
-const constant_1 = require("../utils/constant");
-const failure_1 = require("../utils/failure");
+const express_constant_1 = require("../common/constants/express-constant");
+const failure_1 = require("../common/utils/errors/failure");
 class AuthMiddleware {
     static authenticateToken = (req, res, next) => {
         const authHeader = req.headers.authorization;
@@ -21,9 +21,9 @@ class AuthMiddleware {
                 throw failure_1.Failure.unauthorized('Incomplete token payload');
             }
             // Set decoded token details to response locals
-            res.locals[constant_1.CONSTANT.LOCAL.EMAIL] = decodedTokenPayload.email;
-            res.locals[constant_1.CONSTANT.LOCAL.IAT] = decodedTokenPayload.iat;
-            res.locals[constant_1.CONSTANT.LOCAL.EXP] = decodedTokenPayload.exp;
+            res.locals[express_constant_1.EXPRESS.LOCAL.EMAIL] = decodedTokenPayload.email;
+            res.locals[express_constant_1.EXPRESS.LOCAL.IAT] = decodedTokenPayload.iat;
+            res.locals[express_constant_1.EXPRESS.LOCAL.EXP] = decodedTokenPayload.exp;
             next();
         });
     };

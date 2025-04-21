@@ -1,10 +1,10 @@
 import {Request, Response, NextFunction} from 'express';
 import {verify} from 'jsonwebtoken';
 
-import {MembershipTokenPayload} from '../models/dto/membership-dto';
+import {MembershipTokenPayload} from '../models/dto/membership/membership-request-dto';
 import {CONFIG} from '../configs/config';
-import {CONSTANT} from '../utils/constant';
-import {Failure} from '../utils/failure';
+import {EXPRESS} from '../common/constants/express-constant';
+import {Failure} from '../common/utils/errors/failure';
 
 class AuthMiddleware {
   static authenticateToken = (
@@ -30,9 +30,9 @@ class AuthMiddleware {
       }
 
       // Set decoded token details to response locals
-      res.locals[CONSTANT.LOCAL.EMAIL] = decodedTokenPayload.email;
-      res.locals[CONSTANT.LOCAL.IAT] = decodedTokenPayload.iat;
-      res.locals[CONSTANT.LOCAL.EXP] = decodedTokenPayload.exp;
+      res.locals[EXPRESS.LOCAL.EMAIL] = decodedTokenPayload.email;
+      res.locals[EXPRESS.LOCAL.IAT] = decodedTokenPayload.iat;
+      res.locals[EXPRESS.LOCAL.EXP] = decodedTokenPayload.exp;
       next();
     });
   };

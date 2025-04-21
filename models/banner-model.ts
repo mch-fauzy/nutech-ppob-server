@@ -1,17 +1,3 @@
-// Read-only property
-const bannerDbField = {
-  id: 'id',
-  bannerName: 'banner_name',
-  bannerImage: 'banner_image',
-  description: 'description',
-  createdAt: 'created_at',
-  createdBy: 'created_by',
-  updatedAt: 'updated_at',
-  updatedBy: 'updated_by',
-  deletedAt: 'deleted_at',
-  deletedBy: 'deleted_by',
-} as const;
-
 interface BannerDb {
   id: number;
   banner_name: string;
@@ -38,4 +24,4 @@ interface Banner {
   deletedBy: string | null;
 }
 
-export {bannerDbField, BannerDb, Banner};
+export {BannerDb, Banner};

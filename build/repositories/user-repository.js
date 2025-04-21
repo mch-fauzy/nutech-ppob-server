@@ -3,13 +3,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserRepository = void 0;
 const client_1 = require("@prisma/client");
 const prisma_client_1 = require("../configs/prisma-client");
-const user_model_1 = require("../models/user-model");
-const failure_1 = require("../utils/failure");
-const error_handler_1 = require("../utils/error-handler");
+const failure_1 = require("../common/utils/errors/failure");
+const error_handler_1 = require("../common/utils/errors/error-handler");
+const db_field_constant_1 = require("../common/constants/db-field-constant");
+// TODO: ADD RETURN TYPE (IF NOT NATIVE TYPE) IN CONTROLLER, SERVICE, REPO AND ADD MIDDLEWARE OR UTILS TO response with data (message, data) or response with error (message, errors)
 class UserRepository {
     static create = async (data) => {
         try {
-            await prisma_client_1.prismaClient.$executeRaw `
+            return await prisma_client_1.prismaClient.$executeRaw `
         INSERT INTO nutech_users (
           id, 
           email, 
@@ -45,13 +46,13 @@ class UserRepository {
                 throw failure_1.Failure.notFound('User is not found');
             // output of Object.entries(object) => [['name', 'Anton'], ['age', 22]]
             const updateClauses = Object.entries(data).map(([key, value]) => {
-                const dbField = user_model_1.USER_DB_FIELD[key]; // Assign key as the key of type USER_DB_FIELD
+                const dbField = db_field_constant_1.DB_FIELD[key]; // Assign key as the key of type USER_DB_FIELD
                 return client_1.Prisma.sql `${client_1.Prisma.raw(dbField)} = ${value}`;
             });
             const update = client_1.Prisma.join(updateClauses, ', ');
             // Use tx if provided, otherwise fall back to prismaClient
             const client = tx ?? prisma_client_1.prismaClient;
-            await client.$executeRaw `
+            return await client.$executeRaw `
                 UPDATE nutech_users
                 SET ${update}
                 WHERE id = ${id}

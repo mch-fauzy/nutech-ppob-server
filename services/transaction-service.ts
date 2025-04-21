@@ -3,21 +3,23 @@ import {
   TransactionTopUpBalanceByEmailRequest,
   TransactionGetByEmailRequest,
   TransactionPaymentByEmailRequest,
+  TransactionGetListByEmailRequest,
+} from '../models/dto/transaction/transaction-request-dto';
+import {
   TransactionResponse,
   TransactionListResponse,
-  TransactionGetListByEmailRequest,
+  TransactionBalanceResponse,
   TransactionListWithPaginationResponse,
-} from '../models/dto/transaction-dto';
-import {USER_DB_FIELD} from '../models/user-model';
-import {Failure} from '../utils/failure';
+} from '../models/dto/transaction/transaction-response-dto';
+import {DB_FIELD} from '../common/constants/db-field-constant';
+import {Failure} from '../common/utils/errors/failure';
 import {TransactionRepository} from '../repositories/transaction-repository';
-import {generateInvoiceNumber} from '../utils/generate-invoice-number';
+import {generateInvoiceNumber} from '../common/utils/generators/generate-invoice-number';
 import {ServiceRepository} from '../repositories/service-repository';
-import {serviceDbField} from '../models/service-model';
-import {transactionDbField} from '../models/transaction-model';
-import {handleError} from '../utils/error-handler';
-import {withTransactionRetry} from '../utils/db-transaction';
+import {handleError} from '../common/utils/errors/error-handler';
+import {withTransactionRetry} from '../common/utils/database/db-transaction';
 
+// TODO: ADD RETURN TYPE (IF NOT NATIVE TYPE) IN CONTROLLER, SERVICE, REPO AND ADD MIDDLEWARE OR UTILS TO response with data (message, data) or response with error (message, errors)
 class TransactionService {
   static topUpBalanceByEmail = async (
     req: TransactionTopUpBalanceByEmailRequest,
@@ -25,10 +27,10 @@ class TransactionService {
     try {
       const [users, totalUsers] = await UserRepository.findManyAndCountByFilter(
         {
-          selectFields: [USER_DB_FIELD.id],
+          selectFields: [DB_FIELD.ID],
           filterFields: [
             {
-              field: USER_DB_FIELD.email,
+              field: DB_FIELD.EMAIL,
               operator: 'equals',
               value: req.email,
             },
@@ -42,11 +44,13 @@ class TransactionService {
       // Simulate top-up logic, ideally will have confirmation if user already pay for topup
       // Wrap the repository operations in a transaction
       await withTransactionRetry({
+        /* Higher isolation levels offer stronger data consistency but decreased concurrency and performance*/
+        isolationLevel: 'Serializable',
         transactionFn: async tx => {
           const currentUser = await UserRepository.findById({
             id: user.id,
             filter: {
-              selectFields: [USER_DB_FIELD.balance],
+              selectFields: [DB_FIELD.BALANCE],
             },
             tx,
           });
@@ -75,8 +79,6 @@ class TransactionService {
             tx,
           });
         },
-        /* Higher isolation levels offer stronger data consistency but decreased concurrency and performance*/
-        isolationLevel: 'Serializable',
       });
 
       return null;
@@ -92,10 +94,10 @@ class TransactionService {
     try {
       const [users, totalUsers] = await UserRepository.findManyAndCountByFilter(
         {
-          selectFields: [USER_DB_FIELD.id],
+          selectFields: [DB_FIELD.ID],
           filterFields: [
             {
-              field: USER_DB_FIELD.email,
+              field: DB_FIELD.EMAIL,
               operator: 'equals',
               value: req.email,
             },
@@ -109,10 +111,10 @@ class TransactionService {
 
       const [services, totalServices] =
         await ServiceRepository.findManyAndCountByFilter({
-          selectFields: [serviceDbField.id, serviceDbField.serviceTariff],
+          selectFields: [DB_FIELD.ID, DB_FIELD.SERVICE_TARIFF],
           filterFields: [
             {
-              field: serviceDbField.serviceCode,
+              field: DB_FIELD.SERVICE_CODE,
               operator: 'equals',
               value: req.serviceCode,
             },
@@ -126,11 +128,13 @@ class TransactionService {
       // Simulate payment logic, ideally will have confirmation if user already pay for payment
       // Wrap the repository operations in a transaction
       await withTransactionRetry({
+        /* Higher isolation levels offer stronger data consistency but decreased concurrency and performance*/
+        isolationLevel: 'Serializable',
         transactionFn: async tx => {
           const currentUser = await UserRepository.findById({
             id: user.id,
             filter: {
-              selectFields: [USER_DB_FIELD.balance],
+              selectFields: [DB_FIELD.BALANCE],
             },
             tx,
           });
@@ -168,8 +172,6 @@ class TransactionService {
             tx,
           });
         },
-        /* Higher isolation levels offer stronger data consistency but decreased concurrency and performance*/
-        isolationLevel: 'Serializable',
       });
 
       return null;
@@ -181,14 +183,16 @@ class TransactionService {
     }
   };
 
-  static getBalanceByEmail = async (req: TransactionGetByEmailRequest) => {
+  static getBalanceByEmail = async (
+    req: TransactionGetByEmailRequest,
+  ): Promise<TransactionBalanceResponse> => {
     try {
       const [users, totalUsers] = await UserRepository.findManyAndCountByFilter(
         {
-          selectFields: [USER_DB_FIELD.balance],
+          selectFields: [DB_FIELD.BALANCE],
           filterFields: [
             {
-              field: USER_DB_FIELD.email,
+              field: DB_FIELD.EMAIL,
               operator: 'equals',
               value: req.email,
             },
@@ -199,7 +203,9 @@ class TransactionService {
         throw Failure.notFound('User with this email not found');
       const user = users[0];
 
-      return user;
+      return {
+        balance: user.balance,
+      };
     } catch (error) {
       throw handleError({
         operationName: 'TransactionService.getBalanceByEmail',
@@ -214,10 +220,10 @@ class TransactionService {
     try {
       const [users, totalUsers] = await UserRepository.findManyAndCountByFilter(
         {
-          selectFields: [USER_DB_FIELD.id],
+          selectFields: [DB_FIELD.ID],
           filterFields: [
             {
-              field: USER_DB_FIELD.email,
+              field: DB_FIELD.EMAIL,
               operator: 'equals',
               value: req.email,
             },
@@ -231,22 +237,22 @@ class TransactionService {
       const [transactions, totalTransactions] =
         await TransactionRepository.findManyAndCountByFilter({
           selectFields: [
-            transactionDbField.serviceId,
-            transactionDbField.invoiceNumber,
-            transactionDbField.transactionType,
-            transactionDbField.totalAmount,
-            transactionDbField.createdAt,
+            DB_FIELD.SERVICE_ID,
+            DB_FIELD.INVOICE_NUMBER,
+            DB_FIELD.TRANSACTION_TYPE,
+            DB_FIELD.TOTAL_AMOUNT,
+            DB_FIELD.CREATED_AT,
           ],
           filterFields: [
             {
-              field: transactionDbField.userId,
+              field: DB_FIELD.USER_ID,
               operator: 'equals',
               value: user.id,
             },
           ],
           sorts: [
             {
-              field: transactionDbField.createdAt,
+              field: DB_FIELD.CREATED_AT,
               order: 'desc',
             },
           ],
@@ -257,13 +263,10 @@ class TransactionService {
 
       const [services, totalServices] =
         await ServiceRepository.findManyAndCountByFilter({
-          selectFields: [
-            serviceDbField.serviceCode,
-            serviceDbField.serviceName,
-          ],
+          selectFields: [DB_FIELD.SERVICE_CODE, DB_FIELD.SERVICE_NAME],
           filterFields: [
             {
-              field: serviceDbField.id,
+              field: DB_FIELD.ID,
               operator: 'equals',
               value: transaction.serviceId,
             },
@@ -297,10 +300,10 @@ class TransactionService {
     try {
       const [users, totalUsers] = await UserRepository.findManyAndCountByFilter(
         {
-          selectFields: [USER_DB_FIELD.id],
+          selectFields: [DB_FIELD.ID],
           filterFields: [
             {
-              field: USER_DB_FIELD.email,
+              field: DB_FIELD.EMAIL,
               operator: 'equals',
               value: req.email,
             },
@@ -314,22 +317,22 @@ class TransactionService {
       const [transactions, totalTransactions] =
         await TransactionRepository.findManyAndCountByFilter({
           selectFields: [
-            transactionDbField.serviceId,
-            transactionDbField.invoiceNumber,
-            transactionDbField.transactionType,
-            transactionDbField.totalAmount,
-            transactionDbField.createdAt,
+            DB_FIELD.SERVICE_ID,
+            DB_FIELD.INVOICE_NUMBER,
+            DB_FIELD.TRANSACTION_TYPE,
+            DB_FIELD.TOTAL_AMOUNT,
+            DB_FIELD.CREATED_AT,
           ],
           filterFields: [
             {
-              field: transactionDbField.userId,
+              field: DB_FIELD.USER_ID,
               operator: 'equals',
               value: user.id,
             },
           ],
           sorts: [
             {
-              field: transactionDbField.createdAt,
+              field: DB_FIELD.CREATED_AT,
               order: 'desc',
             },
           ],
@@ -340,7 +343,7 @@ class TransactionService {
         });
 
       const [services] = await ServiceRepository.findManyAndCountByFilter({
-        selectFields: [serviceDbField.id, serviceDbField.serviceName],
+        selectFields: [DB_FIELD.ID, DB_FIELD.SERVICE_NAME],
       });
 
       const response: TransactionListResponse[] = transactions.map(

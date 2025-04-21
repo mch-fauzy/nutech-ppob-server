@@ -33,8 +33,8 @@ const config_1 = require("./configs/config");
 const error_response_middleware_1 = require("./middlewares/error-response-middleware");
 const morgan_middleware_1 = require("./middlewares/morgan-middleware");
 const routes_1 = require("./routes");
-const logger_1 = require("./utils/logger");
-const error_handler_1 = require("./utils/error-handler");
+const logger_1 = require("./common/utils/logging/logger");
+const error_handler_1 = require("./common/utils/errors/error-handler");
 const prisma_client_1 = require("./configs/prisma-client");
 /** Initialize Express application */
 const app = (0, express_1.default)();

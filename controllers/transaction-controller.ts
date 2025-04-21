@@ -7,20 +7,23 @@ import {
   TransactionGetListByEmailRequest,
   TransactionPaymentByEmailRequest,
   TransactionTopUpBalanceByEmailRequest,
-  TransactionValidator,
-} from '../models/dto/transaction-dto';
-import {CONSTANT} from '../utils/constant';
-import {responseWithDetails} from '../utils/response';
+} from '../models/dto/transaction/transaction-request-dto';
+import {TransactionValidator} from '../models/dto/transaction/transaction-validator';
+import {INTERNAL_STATUS_CODE} from '../common/constants/internal-status-code-constant';
+import {EXPRESS} from '../common/constants/express-constant';
+import {responseWithDetails} from '../common/utils/http/response';
 import {TransactionType} from '../models/transaction-model';
 import {AuthMiddleware} from '../middlewares/auth-middleware';
+import {PAGINATION} from '../common/constants/pagination-constant';
 
+// TODO: ADD RETURN TYPE (IF NOT NATIVE TYPE) IN CONTROLLER, SERVICE, REPO AND ADD MIDDLEWARE OR UTILS TO response with data (message, data) or response with error (message, errors)
 class TransactionController {
   static getBalanceForCurrentUser = [
     AuthMiddleware.authenticateToken,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const request: TransactionGetByEmailRequest = {
-          email: res.locals[CONSTANT.LOCAL.EMAIL],
+          email: res.locals[EXPRESS.LOCAL.EMAIL],
         };
         const validatedRequest =
           await TransactionValidator.validateGetByEmailRequest(request);
@@ -32,7 +35,7 @@ class TransactionController {
         responseWithDetails(
           res,
           StatusCodes.OK,
-          CONSTANT.INTERNAL_STATUS_CODE.SUCCESS,
+          INTERNAL_STATUS_CODE.SUCCESS,
           'Get balance success',
           response,
         );
@@ -47,7 +50,7 @@ class TransactionController {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const request: TransactionTopUpBalanceByEmailRequest = {
-          email: res.locals[CONSTANT.LOCAL.EMAIL],
+          email: res.locals[EXPRESS.LOCAL.EMAIL],
           transactionType: TransactionType.TOPUP,
           topUpAmount: req.body.topUpAmount,
         };
@@ -69,7 +72,7 @@ class TransactionController {
         responseWithDetails(
           res,
           StatusCodes.OK,
-          CONSTANT.INTERNAL_STATUS_CODE.SUCCESS,
+          INTERNAL_STATUS_CODE.SUCCESS,
           'Top-Up balance success',
           response,
         );
@@ -84,7 +87,7 @@ class TransactionController {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const request: TransactionPaymentByEmailRequest = {
-          email: req.res?.locals[CONSTANT.LOCAL.EMAIL],
+          email: req.res?.locals[EXPRESS.LOCAL.EMAIL],
           transactionType: TransactionType.PAYMENT,
           serviceCode: req.body.serviceCode,
         };
@@ -104,7 +107,7 @@ class TransactionController {
         responseWithDetails(
           res,
           StatusCodes.OK,
-          CONSTANT.INTERNAL_STATUS_CODE.SUCCESS,
+          INTERNAL_STATUS_CODE.SUCCESS,
           'Payment success',
           response,
         );
@@ -119,10 +122,10 @@ class TransactionController {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const request: TransactionGetListByEmailRequest = {
-          email: res.locals[CONSTANT.LOCAL.EMAIL],
+          email: res.locals[EXPRESS.LOCAL.EMAIL],
           page: req.query.page
             ? Number(req.query.page)
-            : CONSTANT.QUERY.DEFAULT_PAGE,
+            : PAGINATION.DEFAULT_PAGE,
           pageSize: req.query.page_size
             ? Number(req.query.page_size)
             : undefined,
@@ -139,7 +142,7 @@ class TransactionController {
         responseWithDetails(
           res,
           StatusCodes.OK,
-          CONSTANT.INTERNAL_STATUS_CODE.SUCCESS,
+          INTERNAL_STATUS_CODE.SUCCESS,
           'Get transaction list success',
           response,
         );

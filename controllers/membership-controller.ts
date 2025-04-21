@@ -9,15 +9,17 @@ import {
   MembershipUpdateProfileByEmailRequest,
   MembershipUpdateProfileImageByEmailRequest,
   MembershipUpdateProfileImageCloudinaryByEmailRequest,
-  MembershipValidator,
-} from '../models/dto/membership-dto';
-import {CONSTANT} from '../utils/constant';
-import {responseWithDetails} from '../utils/response';
+} from '../models/dto/membership/membership-request-dto';
+import {MembershipValidator} from '../models/dto/membership/membership-validator';
+import {INTERNAL_STATUS_CODE} from '../common/constants/internal-status-code-constant';
+import {EXPRESS} from '../common/constants/express-constant';
+import {responseWithDetails} from '../common/utils/http/response';
 import {CONFIG} from '../configs/config';
-import {Failure} from '../utils/failure';
+import {Failure} from '../common/utils/errors/failure';
 import {AuthMiddleware} from '../middlewares/auth-middleware';
 import {MulterMiddleware} from '../middlewares/multer-middleware';
 
+// TODO: ADD RETURN TYPE (IF NOT NATIVE TYPE) IN CONTROLLER, SERVICE, REPO AND ADD MIDDLEWARE OR UTILS TO response with data (message, data) or response with error (message, errors)
 class MembershipController {
   static register = async (
     {body}: Request,
@@ -44,7 +46,7 @@ class MembershipController {
       responseWithDetails(
         res,
         StatusCodes.OK,
-        CONSTANT.INTERNAL_STATUS_CODE.SUCCESS,
+        INTERNAL_STATUS_CODE.SUCCESS,
         'Register success',
         response,
       );
@@ -70,7 +72,7 @@ class MembershipController {
       responseWithDetails(
         res,
         StatusCodes.OK,
-        CONSTANT.INTERNAL_STATUS_CODE.SUCCESS,
+        INTERNAL_STATUS_CODE.SUCCESS,
         'Login success',
         response,
       );
@@ -84,7 +86,7 @@ class MembershipController {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const request: MembershipGetByEmailRequest = {
-          email: req.res?.locals[CONSTANT.LOCAL.EMAIL],
+          email: req.res?.locals[EXPRESS.LOCAL.EMAIL],
         };
         const validatedRequest =
           await MembershipValidator.validateGetByEmailRequest(request);
@@ -96,7 +98,7 @@ class MembershipController {
         responseWithDetails(
           res,
           StatusCodes.OK,
-          CONSTANT.INTERNAL_STATUS_CODE.SUCCESS,
+          INTERNAL_STATUS_CODE.SUCCESS,
           'Get profile success',
           response,
         );
@@ -111,7 +113,7 @@ class MembershipController {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const request: MembershipUpdateProfileByEmailRequest = {
-          email: req.res?.locals[CONSTANT.LOCAL.EMAIL],
+          email: req.res?.locals[EXPRESS.LOCAL.EMAIL],
           firstName: req.body.firstName,
           lastName: req.body.lastName,
         };
@@ -133,7 +135,7 @@ class MembershipController {
         responseWithDetails(
           res,
           StatusCodes.OK,
-          CONSTANT.INTERNAL_STATUS_CODE.SUCCESS,
+          INTERNAL_STATUS_CODE.SUCCESS,
           'Update profile success',
           response,
         );
@@ -151,7 +153,7 @@ class MembershipController {
         if (!req.file) throw Failure.badRequest('File is not found');
 
         const request: MembershipUpdateProfileImageByEmailRequest = {
-          email: req.res?.locals[CONSTANT.LOCAL.EMAIL],
+          email: req.res?.locals[EXPRESS.LOCAL.EMAIL],
           imageUrl: `${CONFIG.APP.IMAGE_STATIC_URL}/${req.file.filename}`,
         };
         const validatedRequest =
@@ -173,7 +175,7 @@ class MembershipController {
         responseWithDetails(
           res,
           StatusCodes.OK,
-          CONSTANT.INTERNAL_STATUS_CODE.SUCCESS,
+          INTERNAL_STATUS_CODE.SUCCESS,
           'Update profile image success',
           response,
         );
@@ -191,7 +193,7 @@ class MembershipController {
         if (!req.file) throw Failure.badRequest('File is not found');
 
         const request: MembershipUpdateProfileImageCloudinaryByEmailRequest = {
-          email: req.res?.locals[CONSTANT.LOCAL.EMAIL],
+          email: req.res?.locals[EXPRESS.LOCAL.EMAIL],
           fileName: req.file.filename,
           buffer: req.file.buffer,
           mimeType: req.file.mimetype,
@@ -217,7 +219,7 @@ class MembershipController {
         responseWithDetails(
           res,
           StatusCodes.OK,
-          CONSTANT.INTERNAL_STATUS_CODE.SUCCESS,
+          INTERNAL_STATUS_CODE.SUCCESS,
           'Update profile image success',
           response,
         );

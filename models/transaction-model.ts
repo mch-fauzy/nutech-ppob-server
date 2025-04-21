@@ -1,19 +1,3 @@
-// Read-only property
-const transactionDbField = {
-  id: 'id',
-  userId: 'user_id',
-  serviceId: 'service_id',
-  transactionType: 'transaction_type',
-  totalAmount: 'total_amount',
-  invoiceNumber: 'invoice_number',
-  createdAt: 'created_at',
-  createdBy: 'created_by',
-  updatedAt: 'updated_at',
-  updatedBy: 'updated_by',
-  deletedAt: 'deleted_at',
-  deletedBy: 'deleted_by',
-} as const;
-
 enum TransactionType {
   TOPUP = 'TOPUP',
   PAYMENT = 'PAYMENT',
@@ -64,7 +48,6 @@ type TransactionCreate = Pick<
 >;
 
 export {
-  transactionDbField,
   TransactionType,
   TransactionDb,
   Transaction,

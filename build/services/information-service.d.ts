@@ -1,5 +1,7 @@
+import { Banner } from '../models/banner-model';
+import { Service } from '../models/service-model';
 declare class InformationService {
-    static getBannerList: () => Promise<import("../models/banner-model").Banner[]>;
-    static getServiceList: () => Promise<import("../models/service-model").Service[]>;
+    static getBannerList: () => Promise<Banner[]>;
+    static getServiceList: () => Promise<Service[]>;
 }
 export { InformationService };

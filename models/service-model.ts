@@ -1,18 +1,3 @@
-// Read-only property
-const serviceDbField = {
-  id: 'id',
-  serviceCode: 'service_code',
-  serviceName: 'service_name',
-  serviceIcon: 'service_icon',
-  serviceTariff: 'service_tariff',
-  createdAt: 'created_at',
-  createdBy: 'created_by',
-  updatedAt: 'updated_at',
-  updatedBy: 'updated_by',
-  deletedAt: 'deleted_at',
-  deletedBy: 'deleted_by',
-} as const;
-
 enum ServiceCode {
   PAJAK = 'PAJAK',
   PLN = 'PLN',
@@ -56,4 +41,4 @@ interface Service {
   deletedBy: string | null;
 }
 
-export {serviceDbField, ServiceCode, ServiceDb, Service};
+export {ServiceCode, ServiceDb, Service};

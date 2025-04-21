@@ -17,6 +17,6 @@ declare const CONFIG: {
         API_SECRET: string | undefined;
         IMAGE_STORAGE_DIRECTORY: string | undefined;
     };
-    BCRYPT_SALT_ROUNDS: string | undefined;
+    BCRYPT_SALT_ROUNDS: number;
 };
 export { CONFIG };

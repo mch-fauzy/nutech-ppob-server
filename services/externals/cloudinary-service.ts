@@ -1,12 +1,8 @@
-import {
-  v2 as cloudinary,
-  type UploadApiErrorResponse,
-  type UploadApiResponse,
-} from 'cloudinary';
+import {v2 as cloudinary, type UploadApiResponse} from 'cloudinary';
 
 import {CONFIG} from '../../configs/config';
-import type {CloudinaryUploadImageRequest} from '../../models/dto/externals/cloudinary-dto';
-import {handleError} from '../../utils/error-handler';
+import type {CloudinaryUploadImageRequest} from '../../models/dto/externals/cloudinary-request-dto';
+import {handleError} from '../../common/utils/errors/error-handler';
 
 /**
  * Service to interact with the Cloudinary API for image management
@@ -23,22 +19,6 @@ class CloudinaryService {
       api_secret: CONFIG.CLOUDINARY.API_SECRET,
       secure: true,
     });
-  };
-
-  /**
-   * Determines whether the provided error is an instance of UploadApiErrorResponse
-   * @param error The error object to check
-   * @return True if the error is an UploadApiErrorResponse, otherwise false
-   */
-  private static isUploadApiErrorResponse = (
-    error: unknown,
-  ): error is UploadApiErrorResponse => {
-    if (typeof error !== 'object' || error === null) return false;
-
-    const hasHttpCodeProperty = 'http_code' in error && !('stack' in error);
-    const hasErrorProperty = 'error' in error;
-
-    return hasHttpCodeProperty || hasErrorProperty;
   };
 
   /**

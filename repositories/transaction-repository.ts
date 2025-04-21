@@ -7,8 +7,9 @@ import {
   TransactionDb,
 } from '../models/transaction-model';
 import {Filter} from '../models/filter';
-import {handleError} from '../utils/error-handler';
+import {handleError} from '../common/utils/errors/error-handler';
 
+// TODO: ADD RETURN TYPE (IF NOT NATIVE TYPE) IN CONTROLLER, SERVICE, REPO AND ADD MIDDLEWARE OR UTILS TO response with data (message, data) or response with error (message, errors)
 class TransactionRepository {
   static create = async (
     data: TransactionCreate,

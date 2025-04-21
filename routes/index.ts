@@ -6,7 +6,7 @@ import {informationRouterV1} from './v1/information-route';
 import {transactionRouterV1} from './v1/transaction-route';
 import {CONFIG} from '../configs/config';
 import swaggerDocument from '../docs/swagger.json';
-import {logInfo} from '../utils/logger';
+import {logInfo} from '../common/utils/logging/logger';
 
 const router = Router();
 const SWAGGER_CSS_URL =

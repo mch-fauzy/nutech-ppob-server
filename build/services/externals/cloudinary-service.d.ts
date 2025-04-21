@@ -1,5 +1,5 @@
 import { type UploadApiResponse } from 'cloudinary';
-import type { CloudinaryUploadImageRequest } from '../../models/dto/externals/cloudinary-dto';
+import type { CloudinaryUploadImageRequest } from '../../models/dto/externals/cloudinary-request-dto';
 /**
  * Service to interact with the Cloudinary API for image management
  */
@@ -9,12 +9,6 @@ declare class CloudinaryService {
      * This method is private and is invoked before performing any operation with Cloudinary
      */
     private static config;
-    /**
-     * Determines whether the provided error is an instance of UploadApiErrorResponse
-     * @param error The error object to check
-     * @return True if the error is an UploadApiErrorResponse, otherwise false
-     */
-    private static isUploadApiErrorResponse;
     /**
      * Uploads an image buffer to Cloudinary with specified options
      * @param fileName The name of the file to be uploaded

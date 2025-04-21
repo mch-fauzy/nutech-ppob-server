@@ -1,15 +1,3 @@
-declare const bannerDbField: {
-    readonly id: "id";
-    readonly bannerName: "banner_name";
-    readonly bannerImage: "banner_image";
-    readonly description: "description";
-    readonly createdAt: "created_at";
-    readonly createdBy: "created_by";
-    readonly updatedAt: "updated_at";
-    readonly updatedBy: "updated_by";
-    readonly deletedAt: "deleted_at";
-    readonly deletedBy: "deleted_by";
-};
 interface BannerDb {
     id: number;
     banner_name: string;
@@ -34,4 +22,4 @@ interface Banner {
     deletedAt: Date | null;
     deletedBy: string | null;
 }
-export { bannerDbField, BannerDb, Banner };
+export { BannerDb, Banner };

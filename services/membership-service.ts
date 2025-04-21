@@ -8,21 +8,22 @@ import type {
   MembershipUpdateProfileByEmailRequest,
   MembershipUpdateProfileImageByEmailRequest,
   MembershipUpdateProfileImageCloudinaryByEmailRequest,
-} from '../models/dto/membership-dto';
-import {USER_DB_FIELD} from '../models/user-model';
-import {comparePassword, hashPassword} from '../utils/password';
-import {generateToken} from '../utils/jwt';
-import {Failure} from '../utils/failure';
+} from '../models/dto/membership/membership-request-dto';
+import {DB_FIELD} from '../common/constants/db-field-constant';
+import {comparePassword, hashPassword} from '../common/utils/auth/password';
+import {generateToken} from '../common/utils/auth/jwt';
+import {Failure} from '../common/utils/errors/failure';
 import {CloudinaryService} from './externals/cloudinary-service';
-import {handleError} from '../utils/error-handler';
+import {handleError} from '../common/utils/errors/error-handler';
 
+// TODO: ADD RETURN TYPE (IF NOT NATIVE TYPE) IN CONTROLLER, SERVICE, REPO AND ADD MIDDLEWARE OR UTILS TO response with data (message, data) or response with error (message, errors)
 class MembershipService {
   static register = async (req: MembershipRegisterRequest) => {
     try {
       const totalUsers = await UserRepository.countByFilter({
         filterFields: [
           {
-            field: USER_DB_FIELD.email,
+            field: DB_FIELD.EMAIL,
             operator: 'equals',
             value: req.email,
           },
@@ -53,10 +54,10 @@ class MembershipService {
     try {
       const [users, totalUsers] = await UserRepository.findManyAndCountByFilter(
         {
-          selectFields: [USER_DB_FIELD.email, USER_DB_FIELD.password],
+          selectFields: [DB_FIELD.EMAIL, DB_FIELD.PASSWORD],
           filterFields: [
             {
-              field: USER_DB_FIELD.email,
+              field: DB_FIELD.EMAIL,
               operator: 'equals',
               value: req.email,
             },
@@ -90,14 +91,14 @@ class MembershipService {
       const [users, totalUsers] = await UserRepository.findManyAndCountByFilter(
         {
           selectFields: [
-            USER_DB_FIELD.email,
-            USER_DB_FIELD.firstName,
-            USER_DB_FIELD.lastName,
-            USER_DB_FIELD.profileImage,
+            DB_FIELD.EMAIL,
+            DB_FIELD.FIRST_NAME,
+            DB_FIELD.LAST_NAME,
+            DB_FIELD.PROFILE_IMAGE,
           ],
           filterFields: [
             {
-              field: USER_DB_FIELD.email,
+              field: DB_FIELD.EMAIL,
               operator: 'equals',
               value: req.email,
             },
@@ -120,10 +121,10 @@ class MembershipService {
     try {
       const [users, totalUsers] = await UserRepository.findManyAndCountByFilter(
         {
-          selectFields: [USER_DB_FIELD.id],
+          selectFields: [DB_FIELD.ID],
           filterFields: [
             {
-              field: USER_DB_FIELD.email,
+              field: DB_FIELD.EMAIL,
               operator: 'equals',
               value: req.email,
             },
@@ -159,10 +160,10 @@ class MembershipService {
     try {
       const [users, totalUsers] = await UserRepository.findManyAndCountByFilter(
         {
-          selectFields: [USER_DB_FIELD.id],
+          selectFields: [DB_FIELD.ID],
           filterFields: [
             {
-              field: USER_DB_FIELD.email,
+              field: DB_FIELD.EMAIL,
               operator: 'equals',
               value: req.email,
             },
@@ -197,10 +198,10 @@ class MembershipService {
     try {
       const [users, totalUsers] = await UserRepository.findManyAndCountByFilter(
         {
-          selectFields: [USER_DB_FIELD.id],
+          selectFields: [DB_FIELD.ID],
           filterFields: [
             {
-              field: USER_DB_FIELD.email,
+              field: DB_FIELD.EMAIL,
               operator: 'equals',
               value: req.email,
             },
