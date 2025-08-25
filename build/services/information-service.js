@@ -11,9 +11,9 @@ class InformationService {
         try {
             const [banners] = await banner_repository_1.BannerRepository.findManyAndCountByFilter({
                 selectFields: [
-                    db_field_constant_1.DB_FIELD.BANNER_NAME,
-                    db_field_constant_1.DB_FIELD.BANNER_IMAGE,
-                    db_field_constant_1.DB_FIELD.DESCRIPTION,
+                    db_field_constant_1.DB_FIELD.bannerName,
+                    db_field_constant_1.DB_FIELD.bannerImage,
+                    db_field_constant_1.DB_FIELD.description,
                 ],
             });
             return banners;
@@ -29,10 +29,10 @@ class InformationService {
         try {
             const [services] = await service_repository_1.ServiceRepository.findManyAndCountByFilter({
                 selectFields: [
-                    db_field_constant_1.DB_FIELD.SERVICE_CODE,
-                    db_field_constant_1.DB_FIELD.SERVICE_NAME,
-                    db_field_constant_1.DB_FIELD.SERVICE_ICON,
-                    db_field_constant_1.DB_FIELD.SERVICE_TARIFF,
+                    db_field_constant_1.DB_FIELD.serviceCode,
+                    db_field_constant_1.DB_FIELD.serviceName,
+                    db_field_constant_1.DB_FIELD.serviceIcon,
+                    db_field_constant_1.DB_FIELD.serviceTariff,
                 ],
             });
             return services;

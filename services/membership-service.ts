@@ -23,7 +23,7 @@ class MembershipService {
       const totalUsers = await UserRepository.countByFilter({
         filterFields: [
           {
-            field: DB_FIELD.EMAIL,
+            field: DB_FIELD.email,
             operator: 'equals',
             value: req.email,
           },
@@ -54,10 +54,10 @@ class MembershipService {
     try {
       const [users, totalUsers] = await UserRepository.findManyAndCountByFilter(
         {
-          selectFields: [DB_FIELD.EMAIL, DB_FIELD.PASSWORD],
+          selectFields: [DB_FIELD.email, DB_FIELD.password],
           filterFields: [
             {
-              field: DB_FIELD.EMAIL,
+              field: DB_FIELD.email,
               operator: 'equals',
               value: req.email,
             },
@@ -91,14 +91,14 @@ class MembershipService {
       const [users, totalUsers] = await UserRepository.findManyAndCountByFilter(
         {
           selectFields: [
-            DB_FIELD.EMAIL,
-            DB_FIELD.FIRST_NAME,
-            DB_FIELD.LAST_NAME,
-            DB_FIELD.PROFILE_IMAGE,
+            DB_FIELD.email,
+            DB_FIELD.firstName,
+            DB_FIELD.lastName,
+            DB_FIELD.profileImage,
           ],
           filterFields: [
             {
-              field: DB_FIELD.EMAIL,
+              field: DB_FIELD.email,
               operator: 'equals',
               value: req.email,
             },
@@ -121,10 +121,10 @@ class MembershipService {
     try {
       const [users, totalUsers] = await UserRepository.findManyAndCountByFilter(
         {
-          selectFields: [DB_FIELD.ID],
+          selectFields: [DB_FIELD.id],
           filterFields: [
             {
-              field: DB_FIELD.EMAIL,
+              field: DB_FIELD.email,
               operator: 'equals',
               value: req.email,
             },
@@ -160,10 +160,10 @@ class MembershipService {
     try {
       const [users, totalUsers] = await UserRepository.findManyAndCountByFilter(
         {
-          selectFields: [DB_FIELD.ID],
+          selectFields: [DB_FIELD.id],
           filterFields: [
             {
-              field: DB_FIELD.EMAIL,
+              field: DB_FIELD.email,
               operator: 'equals',
               value: req.email,
             },
@@ -198,10 +198,10 @@ class MembershipService {
     try {
       const [users, totalUsers] = await UserRepository.findManyAndCountByFilter(
         {
-          selectFields: [DB_FIELD.ID],
+          selectFields: [DB_FIELD.id],
           filterFields: [
             {
-              field: DB_FIELD.EMAIL,
+              field: DB_FIELD.email,
               operator: 'equals',
               value: req.email,
             },

@@ -16,7 +16,7 @@ class MembershipService {
             const totalUsers = await user_repository_1.UserRepository.countByFilter({
                 filterFields: [
                     {
-                        field: db_field_constant_1.DB_FIELD.EMAIL,
+                        field: db_field_constant_1.DB_FIELD.email,
                         operator: 'equals',
                         value: req.email,
                     },
@@ -44,10 +44,10 @@ class MembershipService {
     static login = async (req) => {
         try {
             const [users, totalUsers] = await user_repository_1.UserRepository.findManyAndCountByFilter({
-                selectFields: [db_field_constant_1.DB_FIELD.EMAIL, db_field_constant_1.DB_FIELD.PASSWORD],
+                selectFields: [db_field_constant_1.DB_FIELD.email, db_field_constant_1.DB_FIELD.password],
                 filterFields: [
                     {
-                        field: db_field_constant_1.DB_FIELD.EMAIL,
+                        field: db_field_constant_1.DB_FIELD.email,
                         operator: 'equals',
                         value: req.email,
                     },
@@ -75,14 +75,14 @@ class MembershipService {
         try {
             const [users, totalUsers] = await user_repository_1.UserRepository.findManyAndCountByFilter({
                 selectFields: [
-                    db_field_constant_1.DB_FIELD.EMAIL,
-                    db_field_constant_1.DB_FIELD.FIRST_NAME,
-                    db_field_constant_1.DB_FIELD.LAST_NAME,
-                    db_field_constant_1.DB_FIELD.PROFILE_IMAGE,
+                    db_field_constant_1.DB_FIELD.email,
+                    db_field_constant_1.DB_FIELD.firstName,
+                    db_field_constant_1.DB_FIELD.lastName,
+                    db_field_constant_1.DB_FIELD.profileImage,
                 ],
                 filterFields: [
                     {
-                        field: db_field_constant_1.DB_FIELD.EMAIL,
+                        field: db_field_constant_1.DB_FIELD.email,
                         operator: 'equals',
                         value: req.email,
                     },
@@ -100,10 +100,10 @@ class MembershipService {
     static updateProfileByEmail = async (req) => {
         try {
             const [users, totalUsers] = await user_repository_1.UserRepository.findManyAndCountByFilter({
-                selectFields: [db_field_constant_1.DB_FIELD.ID],
+                selectFields: [db_field_constant_1.DB_FIELD.id],
                 filterFields: [
                     {
-                        field: db_field_constant_1.DB_FIELD.EMAIL,
+                        field: db_field_constant_1.DB_FIELD.email,
                         operator: 'equals',
                         value: req.email,
                     },
@@ -133,10 +133,10 @@ class MembershipService {
     static updateProfileImageByEmail = async (req) => {
         try {
             const [users, totalUsers] = await user_repository_1.UserRepository.findManyAndCountByFilter({
-                selectFields: [db_field_constant_1.DB_FIELD.ID],
+                selectFields: [db_field_constant_1.DB_FIELD.id],
                 filterFields: [
                     {
-                        field: db_field_constant_1.DB_FIELD.EMAIL,
+                        field: db_field_constant_1.DB_FIELD.email,
                         operator: 'equals',
                         value: req.email,
                     },
@@ -165,10 +165,10 @@ class MembershipService {
     static updateProfileImageCloudinaryByEmail = async (req) => {
         try {
             const [users, totalUsers] = await user_repository_1.UserRepository.findManyAndCountByFilter({
-                selectFields: [db_field_constant_1.DB_FIELD.ID],
+                selectFields: [db_field_constant_1.DB_FIELD.id],
                 filterFields: [
                     {
-                        field: db_field_constant_1.DB_FIELD.EMAIL,
+                        field: db_field_constant_1.DB_FIELD.email,
                         operator: 'equals',
                         value: req.email,
                     },

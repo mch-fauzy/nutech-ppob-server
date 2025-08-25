@@ -27,10 +27,10 @@ class TransactionService {
     try {
       const [users, totalUsers] = await UserRepository.findManyAndCountByFilter(
         {
-          selectFields: [DB_FIELD.ID],
+          selectFields: [DB_FIELD.id],
           filterFields: [
             {
-              field: DB_FIELD.EMAIL,
+              field: DB_FIELD.email,
               operator: 'equals',
               value: req.email,
             },
@@ -50,7 +50,7 @@ class TransactionService {
           const currentUser = await UserRepository.findById({
             id: user.id,
             filter: {
-              selectFields: [DB_FIELD.BALANCE],
+              selectFields: [DB_FIELD.balance],
             },
             tx,
           });
@@ -94,10 +94,10 @@ class TransactionService {
     try {
       const [users, totalUsers] = await UserRepository.findManyAndCountByFilter(
         {
-          selectFields: [DB_FIELD.ID],
+          selectFields: [DB_FIELD.id],
           filterFields: [
             {
-              field: DB_FIELD.EMAIL,
+              field: DB_FIELD.email,
               operator: 'equals',
               value: req.email,
             },
@@ -111,10 +111,10 @@ class TransactionService {
 
       const [services, totalServices] =
         await ServiceRepository.findManyAndCountByFilter({
-          selectFields: [DB_FIELD.ID, DB_FIELD.SERVICE_TARIFF],
+          selectFields: [DB_FIELD.id, DB_FIELD.serviceTariff],
           filterFields: [
             {
-              field: DB_FIELD.SERVICE_CODE,
+              field: DB_FIELD.serviceCode,
               operator: 'equals',
               value: req.serviceCode,
             },
@@ -134,7 +134,7 @@ class TransactionService {
           const currentUser = await UserRepository.findById({
             id: user.id,
             filter: {
-              selectFields: [DB_FIELD.BALANCE],
+              selectFields: [DB_FIELD.balance],
             },
             tx,
           });
@@ -189,10 +189,10 @@ class TransactionService {
     try {
       const [users, totalUsers] = await UserRepository.findManyAndCountByFilter(
         {
-          selectFields: [DB_FIELD.BALANCE],
+          selectFields: [DB_FIELD.balance],
           filterFields: [
             {
-              field: DB_FIELD.EMAIL,
+              field: DB_FIELD.email,
               operator: 'equals',
               value: req.email,
             },
@@ -220,10 +220,10 @@ class TransactionService {
     try {
       const [users, totalUsers] = await UserRepository.findManyAndCountByFilter(
         {
-          selectFields: [DB_FIELD.ID],
+          selectFields: [DB_FIELD.id],
           filterFields: [
             {
-              field: DB_FIELD.EMAIL,
+              field: DB_FIELD.email,
               operator: 'equals',
               value: req.email,
             },
@@ -237,22 +237,22 @@ class TransactionService {
       const [transactions, totalTransactions] =
         await TransactionRepository.findManyAndCountByFilter({
           selectFields: [
-            DB_FIELD.SERVICE_ID,
-            DB_FIELD.INVOICE_NUMBER,
-            DB_FIELD.TRANSACTION_TYPE,
-            DB_FIELD.TOTAL_AMOUNT,
-            DB_FIELD.CREATED_AT,
+            DB_FIELD.serviceId,
+            DB_FIELD.invoiceNumber,
+            DB_FIELD.transactionType,
+            DB_FIELD.totalAmount,
+            DB_FIELD.createdAt,
           ],
           filterFields: [
             {
-              field: DB_FIELD.USER_ID,
+              field: DB_FIELD.userId,
               operator: 'equals',
               value: user.id,
             },
           ],
           sorts: [
             {
-              field: DB_FIELD.CREATED_AT,
+              field: DB_FIELD.createdAt,
               order: 'desc',
             },
           ],
@@ -263,10 +263,10 @@ class TransactionService {
 
       const [services, totalServices] =
         await ServiceRepository.findManyAndCountByFilter({
-          selectFields: [DB_FIELD.SERVICE_CODE, DB_FIELD.SERVICE_NAME],
+          selectFields: [DB_FIELD.serviceCode, DB_FIELD.serviceName],
           filterFields: [
             {
-              field: DB_FIELD.ID,
+              field: DB_FIELD.id,
               operator: 'equals',
               value: transaction.serviceId,
             },
@@ -300,10 +300,10 @@ class TransactionService {
     try {
       const [users, totalUsers] = await UserRepository.findManyAndCountByFilter(
         {
-          selectFields: [DB_FIELD.ID],
+          selectFields: [DB_FIELD.id],
           filterFields: [
             {
-              field: DB_FIELD.EMAIL,
+              field: DB_FIELD.email,
               operator: 'equals',
               value: req.email,
             },
@@ -317,22 +317,22 @@ class TransactionService {
       const [transactions, totalTransactions] =
         await TransactionRepository.findManyAndCountByFilter({
           selectFields: [
-            DB_FIELD.SERVICE_ID,
-            DB_FIELD.INVOICE_NUMBER,
-            DB_FIELD.TRANSACTION_TYPE,
-            DB_FIELD.TOTAL_AMOUNT,
-            DB_FIELD.CREATED_AT,
+            DB_FIELD.serviceId,
+            DB_FIELD.invoiceNumber,
+            DB_FIELD.transactionType,
+            DB_FIELD.totalAmount,
+            DB_FIELD.createdAt,
           ],
           filterFields: [
             {
-              field: DB_FIELD.USER_ID,
+              field: DB_FIELD.userId,
               operator: 'equals',
               value: user.id,
             },
           ],
           sorts: [
             {
-              field: DB_FIELD.CREATED_AT,
+              field: DB_FIELD.createdAt,
               order: 'desc',
             },
           ],
@@ -343,7 +343,7 @@ class TransactionService {
         });
 
       const [services] = await ServiceRepository.findManyAndCountByFilter({
-        selectFields: [DB_FIELD.ID, DB_FIELD.SERVICE_NAME],
+        selectFields: [DB_FIELD.id, DB_FIELD.serviceName],
       });
 
       const response: TransactionListResponse[] = transactions.map(

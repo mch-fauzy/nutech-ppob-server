@@ -27,7 +27,7 @@
   "author": "Muchamad Fauzy",
   "license": "ISC",
   "engines": {
-    "node": ">=20.11.0"
+    "node": ">=22.0.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

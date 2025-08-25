@@ -11,9 +11,9 @@ class InformationService {
     try {
       const [banners] = await BannerRepository.findManyAndCountByFilter({
         selectFields: [
-          DB_FIELD.BANNER_NAME,
-          DB_FIELD.BANNER_IMAGE,
-          DB_FIELD.DESCRIPTION,
+          DB_FIELD.bannerName,
+          DB_FIELD.bannerImage,
+          DB_FIELD.description,
         ],
       });
 
@@ -30,10 +30,10 @@ class InformationService {
     try {
       const [services] = await ServiceRepository.findManyAndCountByFilter({
         selectFields: [
-          DB_FIELD.SERVICE_CODE,
-          DB_FIELD.SERVICE_NAME,
-          DB_FIELD.SERVICE_ICON,
-          DB_FIELD.SERVICE_TARIFF,
+          DB_FIELD.serviceCode,
+          DB_FIELD.serviceName,
+          DB_FIELD.serviceIcon,
+          DB_FIELD.serviceTariff,
         ],
       });
 
